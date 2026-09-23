@@ -284,40 +284,34 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
     var focused by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
-        targetValue = if (focused) 1.10f else 1f,
-        animationSpec = tween(170),
+        targetValue = if (focused) 1.055f else 1f,
+        animationSpec = tween(150),
         label = "cardScale"
     )
     val lift by animateDpAsState(
-        targetValue = if (focused) 12.dp else 0.dp,
-        animationSpec = tween(170),
+        targetValue = if (focused) 7.dp else 0.dp,
+        animationSpec = tween(150),
         label = "cardLift"
     )
     val glowAlpha by animateFloatAsState(
         targetValue = if (focused) 1f else 0f,
-        animationSpec = tween(150),
+        animationSpec = tween(140),
         label = "cardGlow"
     )
     val iconScale by animateFloatAsState(
-        targetValue = if (focused) 1.035f else 1f,
-        animationSpec = tween(170),
+        targetValue = if (focused) 1.06f else 1f,
+        animationSpec = tween(150),
         label = "iconScale"
     )
-    val textColor by animateColorAsState(
-        targetValue = if (focused) Color.White else TextPrimary,
-        animationSpec = tween(150),
-        label = "textColor"
-    )
 
-    val shape = RoundedCornerShape(22.dp)
+    val shape = RoundedCornerShape(24.dp)
 
     Surface(
         onClick = onClick,
         color = Color.Transparent,
         shape = shape,
         modifier = Modifier
-            .width(236.dp)
-            .height(286.dp)
+            .size(218.dp)
             .zIndex(if (focused) 10f else 0f)
             .graphicsLayer {
                 scaleX = scale
@@ -325,7 +319,7 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
                 translationY = -lift.toPx()
             }
             .shadow(
-                elevation = if (focused) 30.dp else 8.dp,
+                elevation = if (focused) 24.dp else 6.dp,
                 shape = shape,
                 ambientColor = if (focused) ElectricBlue else Color.Black,
                 spotColor = if (focused) Blue else Color.Black
@@ -340,114 +334,96 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            Color(0xFF131E31),
-                            Color(0xFF0B1220)
+                            Color(0xFF111B2C),
+                            Color(0xFF09111E)
                         )
                     )
                 )
         ) {
-            // Premium focus state: full-card translucent electric blue wash, not an outline.
+            // Full-card translucent focus wash.
             Box(
                 modifier = Modifier
                     .matchParentSize()
                     .alpha(glowAlpha)
                     .background(
                         Brush.linearGradient(
-                            colors = listOf(
-                                Blue.copy(alpha = 0.30f),
-                                ElectricBlue.copy(alpha = 0.24f),
-                                Violet.copy(alpha = 0.20f)
+                            listOf(
+                                Blue.copy(alpha = 0.38f),
+                                ElectricBlue.copy(alpha = 0.30f),
+                                Violet.copy(alpha = 0.24f)
                             )
                         )
                     )
             )
 
-            // Soft top reflection gives the tile more depth.
+            // Square icon presentation with no wide banner-style frame.
+            Box(
+                modifier = Modifier
+                    .size(128.dp)
+                    .align(Alignment.TopCenter)
+                    .padding(top = 18.dp)
+                    .graphicsLayer {
+                        scaleX = iconScale
+                        scaleY = iconScale
+                    }
+                    .clip(RoundedCornerShape(26.dp))
+                    .background(Color.White.copy(alpha = if (focused) 0.13f else 0.07f)),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = app.iconUrl,
+                    contentDescription = app.name,
+                    modifier = Modifier
+                        .size(112.dp)
+                        .clip(RoundedCornerShape(22.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            // Bottom fade keeps title and price readable without making the card feel tall.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(90.dp)
-                    .alpha(if (focused) 0.15f else 0.06f)
+                    .height(84.dp)
+                    .align(Alignment.BottomCenter)
                     .background(
                         Brush.verticalGradient(
-                            listOf(Color.White.copy(alpha = 0.28f), Color.Transparent)
+                            listOf(
+                                Color.Transparent,
+                                Color(0xCC050912)
+                            )
                         )
                     )
             )
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(17.dp)
+                    .align(Alignment.BottomStart)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(166.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .graphicsLayer {
-                            scaleX = iconScale
-                            scaleY = iconScale
-                        }
-                        .clip(RoundedCornerShape(19.dp))
-                        .background(Color.White.copy(alpha = 0.055f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AsyncImage(
-                        model = app.iconUrl,
-                        contentDescription = app.name,
-                        modifier = Modifier
-                            .size(148.dp)
-                            .clip(RoundedCornerShape(28.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-
-                    // Blue glass veil over the artwork while focused.
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .alpha(glowAlpha * 0.42f)
-                            .background(
-                                Brush.linearGradient(
-                                    listOf(
-                                        Blue.copy(alpha = 0.30f),
-                                        ElectricBlue.copy(alpha = 0.18f),
-                                        Color.Transparent
-                                    )
-                                )
-                            )
-                    )
-                }
-
-                Spacer(Modifier.height(16.dp))
-
                 Text(
                     app.name,
-                    color = textColor,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 19.sp,
+                    fontSize = 17.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(Modifier.height(7.dp))
+                Spacer(Modifier.height(5.dp))
 
-                Surface(
+                Text(
+                    if (app.type == AppType.FREE) "FREE" else (app.priceLabel ?: "SUBSCRIPTION"),
                     color = if (app.type == AppType.FREE) {
-                        Blue.copy(alpha = if (focused) 0.22f else 0.12f)
+                        Color(0xFF86E8FF)
                     } else {
-                        Violet.copy(alpha = if (focused) 0.24f else 0.13f)
+                        Color(0xFFC2B5FF)
                     },
-                    shape = RoundedCornerShape(999.dp)
-                ) {
-                    Text(
-                        if (app.type == AppType.FREE) "FREE" else (app.priceLabel ?: "SUBSCRIPTION"),
-                        color = if (app.type == AppType.FREE) Color(0xFF7DE3FF) else Color(0xFFBBAAFF),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        letterSpacing = 0.2.sp,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                    )
-                }
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
