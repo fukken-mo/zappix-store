@@ -1,0 +1,13 @@
+package com.zappix.store
+
+data class StoreApp(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val iconUrl: String,
+    val downloadUrl: String,
+    val type: AppType,
+    val priceLabel: String?
+)
+
+enum class AppType { FREE, SUBSCRIPTION }

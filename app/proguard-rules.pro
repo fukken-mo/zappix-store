@@ -1,0 +1,3 @@
+-keep class com.zappix.store.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
