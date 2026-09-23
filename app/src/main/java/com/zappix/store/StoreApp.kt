@@ -10,4 +10,4 @@ data class StoreApp(
     val priceLabel: String?
 )
 
-enum class AppType { FREE, SUBSCRIPTION }
+enum class AppType { FREE, SUBSCRIPTION, ADULT }
