@@ -2,4 +2,5 @@
 <resources>
     <color name="zappix_background">#050812</color>
     <color name="zappix_blue">#16C7FF</color>
+    <color name="zappix_launcher_bg">#050812</color>
 </resources>
