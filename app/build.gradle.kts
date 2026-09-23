@@ -13,7 +13,7 @@ android {
         minSdk = 23
         targetSdk = 35
         versionCode = 4
-        versionName = "0.4.0"
+        versionName = "0.4.1"
 
         val apiBase = providers.gradleProperty("ZAPPIX_API_BASE_URL")
             .orElse("https://panelsandapps.com/panels/Zappix/api/")
