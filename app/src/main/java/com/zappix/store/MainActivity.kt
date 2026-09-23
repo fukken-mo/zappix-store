@@ -317,7 +317,7 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
         shape = shape,
         modifier = Modifier
             .width(236.dp)
-            .height(292.dp)
+            .height(286.dp)
             .zIndex(if (focused) 10f else 0f)
             .graphicsLayer {
                 scaleX = scale
@@ -382,8 +382,8 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(166.dp)
+                        .size(166.dp)
+                        .align(Alignment.CenterHorizontally)
                         .graphicsLayer {
                             scaleX = iconScale
                             scaleY = iconScale
@@ -396,8 +396,8 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
                         model = app.iconUrl,
                         contentDescription = app.name,
                         modifier = Modifier
-                            .size(138.dp)
-                            .clip(RoundedCornerShape(24.dp)),
+                            .size(148.dp)
+                            .clip(RoundedCornerShape(28.dp)),
                         contentScale = ContentScale.Crop
                     )
 
