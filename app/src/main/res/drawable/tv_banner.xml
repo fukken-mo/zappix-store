@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <size android:width="320dp" android:height="180dp" />
+            <gradient
+                android:angle="0"
+                android:startColor="#050812"
+                android:centerColor="#081A35"
+                android:endColor="#050812" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+    <item
+        android:width="112dp"
+        android:height="112dp"
+        android:gravity="center">
+        <bitmap
+            android:src="@drawable/zappix_icon"
+            android:gravity="center"
+            android:filter="true" />
+    </item>
+</layer-list>
