@@ -284,34 +284,29 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
     var focused by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
-        targetValue = if (focused) 1.055f else 1f,
+        targetValue = if (focused) 1.07f else 1f,
         animationSpec = tween(150),
         label = "cardScale"
     )
     val lift by animateDpAsState(
-        targetValue = if (focused) 7.dp else 0.dp,
+        targetValue = if (focused) 8.dp else 0.dp,
         animationSpec = tween(150),
         label = "cardLift"
     )
-    val glowAlpha by animateFloatAsState(
+    val focusAlpha by animateFloatAsState(
         targetValue = if (focused) 1f else 0f,
         animationSpec = tween(140),
-        label = "cardGlow"
-    )
-    val iconScale by animateFloatAsState(
-        targetValue = if (focused) 1.06f else 1f,
-        animationSpec = tween(150),
-        label = "iconScale"
+        label = "focusAlpha"
     )
 
-    val shape = RoundedCornerShape(24.dp)
+    val shape = RoundedCornerShape(28.dp)
 
     Surface(
         onClick = onClick,
         color = Color.Transparent,
         shape = shape,
         modifier = Modifier
-            .size(218.dp)
+            .size(210.dp)
             .zIndex(if (focused) 10f else 0f)
             .graphicsLayer {
                 scaleX = scale
@@ -331,66 +326,39 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .clip(shape)
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color(0xFF111B2C),
-                            Color(0xFF09111E)
-                        )
-                    )
-                )
+                .background(Color(0xFF0A111D))
         ) {
-            // Full-card translucent focus wash.
+            AsyncImage(
+                model = app.iconUrl,
+                contentDescription = app.name,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
             Box(
                 modifier = Modifier
                     .matchParentSize()
-                    .alpha(glowAlpha)
                     .background(
-                        Brush.linearGradient(
+                        Brush.verticalGradient(
                             listOf(
-                                Blue.copy(alpha = 0.38f),
-                                ElectricBlue.copy(alpha = 0.30f),
-                                Violet.copy(alpha = 0.24f)
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color(0xCC050912)
                             )
                         )
                     )
             )
 
-            // Square icon presentation with no wide banner-style frame.
             Box(
                 modifier = Modifier
-                    .size(128.dp)
-                    .align(Alignment.TopCenter)
-                    .padding(top = 18.dp)
-                    .graphicsLayer {
-                        scaleX = iconScale
-                        scaleY = iconScale
-                    }
-                    .clip(RoundedCornerShape(26.dp))
-                    .background(Color.White.copy(alpha = if (focused) 0.13f else 0.07f)),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    model = app.iconUrl,
-                    contentDescription = app.name,
-                    modifier = Modifier
-                        .size(112.dp)
-                        .clip(RoundedCornerShape(22.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-            // Bottom fade keeps title and price readable without making the card feel tall.
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(84.dp)
-                    .align(Alignment.BottomCenter)
+                    .matchParentSize()
+                    .alpha(focusAlpha)
                     .background(
-                        Brush.verticalGradient(
+                        Brush.linearGradient(
                             listOf(
-                                Color.Transparent,
-                                Color(0xCC050912)
+                                Blue.copy(alpha = 0.34f),
+                                ElectricBlue.copy(alpha = 0.24f),
+                                Violet.copy(alpha = 0.18f)
                             )
                         )
                     )
@@ -399,18 +367,19 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 15.dp)
             ) {
                 Text(
                     app.name,
                     color = Color.White,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     fontSize = 17.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(Modifier.height(5.dp))
+                Spacer(Modifier.height(4.dp))
 
                 Text(
                     if (app.type == AppType.FREE) "FREE" else (app.priceLabel ?: "SUBSCRIPTION"),
@@ -419,7 +388,7 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
                     } else {
                         Color(0xFFC2B5FF)
                     },
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
