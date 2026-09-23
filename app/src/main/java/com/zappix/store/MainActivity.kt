@@ -11,6 +11,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -107,6 +109,7 @@ private fun ZappixStore(vm: StoreViewModel = viewModel()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 62.dp, vertical = 30.dp)
         ) {
             Header(onRefresh = vm::refresh)
@@ -125,6 +128,7 @@ private fun ZappixStore(vm: StoreViewModel = viewModel()) {
                 else -> {
                     val free = state.apps.filter { it.type == AppType.FREE }
                     val subscription = state.apps.filter { it.type == AppType.SUBSCRIPTION }
+                    val adult = state.apps.filter { it.type == AppType.ADULT }
 
                     StoreSection(
                         title = "Free Apps",
@@ -141,6 +145,17 @@ private fun ZappixStore(vm: StoreViewModel = viewModel()) {
                         apps = subscription,
                         onOpen = { selected = it }
                     )
+
+                    if (adult.isNotEmpty()) {
+                        Spacer(Modifier.height(38.dp))
+
+                        StoreSection(
+                            title = "Adult Apps",
+                            subtitle = "18+ apps",
+                            apps = adult,
+                            onOpen = { selected = it }
+                        )
+                    }
                 }
             }
         }
@@ -382,11 +397,15 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    if (app.type == AppType.FREE) "FREE" else (app.priceLabel ?: "SUBSCRIPTION"),
-                    color = if (app.type == AppType.FREE) {
-                        Color(0xFF86E8FF)
-                    } else {
-                        Color(0xFFC2B5FF)
+                    when (app.type) {
+                        AppType.FREE -> "FREE"
+                        AppType.SUBSCRIPTION -> app.priceLabel ?: "SUBSCRIPTION"
+                        AppType.ADULT -> app.priceLabel ?: "18+"
+                    },
+                    color = when (app.type) {
+                        AppType.FREE -> Color(0xFF86E8FF)
+                        AppType.SUBSCRIPTION -> Color(0xFFC2B5FF)
+                        AppType.ADULT -> Color(0xFFFF8A9A)
                     },
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
@@ -467,12 +486,24 @@ private fun AppDetails(app: StoreApp, onBack: () -> Unit) {
                 Spacer(Modifier.height(12.dp))
 
                 Surface(
-                    color = if (app.type == AppType.FREE) Blue.copy(alpha = 0.14f) else Violet.copy(alpha = 0.16f),
+                    color = when (app.type) {
+                        AppType.FREE -> Blue.copy(alpha = 0.14f)
+                        AppType.SUBSCRIPTION -> Violet.copy(alpha = 0.16f)
+                        AppType.ADULT -> Color(0xFFFF4D67).copy(alpha = 0.16f)
+                    },
                     shape = RoundedCornerShape(999.dp)
                 ) {
                     Text(
-                        if (app.type == AppType.FREE) "FREE" else (app.priceLabel ?: "SUBSCRIPTION"),
-                        color = if (app.type == AppType.FREE) Color(0xFF7DE3FF) else Color(0xFFBEAEFF),
+                        when (app.type) {
+                            AppType.FREE -> "FREE"
+                            AppType.SUBSCRIPTION -> app.priceLabel ?: "SUBSCRIPTION"
+                            AppType.ADULT -> app.priceLabel ?: "18+"
+                        },
+                        color = when (app.type) {
+                            AppType.FREE -> Color(0xFF7DE3FF)
+                            AppType.SUBSCRIPTION -> Color(0xFFBEAEFF)
+                            AppType.ADULT -> Color(0xFFFF8A9A)
+                        },
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(horizontal = 13.dp, vertical = 7.dp)
