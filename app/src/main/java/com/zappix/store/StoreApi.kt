@@ -35,7 +35,11 @@ class StoreApi(
                             description = item.optString("description"),
                             iconUrl = item.optString("icon_url"),
                             downloadUrl = item.getString("download_url"),
-                            type = if (item.optString("app_type") == "subscription") AppType.SUBSCRIPTION else AppType.FREE,
+                            type = when (item.optString("app_type").lowercase()) {
+                                "subscription" -> AppType.SUBSCRIPTION
+                                "adult" -> AppType.ADULT
+                                else -> AppType.FREE
+                            },
                             priceLabel = item.optString("price_label").takeIf { it.isNotBlank() }
                         )
                     )
