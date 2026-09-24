@@ -7,6 +7,8 @@ data class StoreApp(
     val iconUrl: String,
     val downloadUrl: String,
     val packageName: String?,
+    val versionName: String?,
+    val versionCode: Long?,
     val type: AppType,
     val priceLabel: String?
 )
