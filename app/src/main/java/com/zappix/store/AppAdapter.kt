@@ -36,8 +36,6 @@ class AppAdapter(
                 size(420, 420)
             }
 
-            itemView.nextFocusDownId = R.id.installButton
-
             itemView.setOnFocusChangeListener { _, focused ->
                 itemView.animate().cancel()
                 itemView.animate()
