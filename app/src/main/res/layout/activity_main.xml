@@ -5,6 +5,7 @@
     android:background="@drawable/bg_zappix">
 
     <LinearLayout
+        android:id="@+id/mainContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -93,7 +94,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="258dp"
+            android:layout_height="300dp"
             android:layout_marginTop="4dp"
             android:clipChildren="false"
             android:clipToPadding="false">
@@ -121,72 +122,11 @@
                 android:indeterminateTint="#18C8FF" />
         </FrameLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_detail_panel"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="26dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="22dp"
-            android:paddingBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/detailName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="Select an app"
-                    android:textColor="#FFFFFF"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/detailType"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textColor="#65DFFF"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/detailDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:textColor="#9DAABD"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/installButton"
-                android:layout_width="150dp"
-                android:layout_height="54dp"
-                android:layout_marginStart="24dp"
-                android:background="@drawable/bg_install_button"
-                android:focusable="true"
-                android:text="Install"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
         <TextView
             android:id="@+id/errorText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:textColor="#FF8A9A"
             android:textSize="13sp"
             android:visibility="gone" />
@@ -195,9 +135,10 @@
         android:id="@+id/detailsOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F503050A"
+        android:background="#FC03050A"
         android:clickable="true"
-        android:focusable="true"
+        android:focusable="false"
+        android:descendantFocusability="afterDescendants"
         android:visibility="gone">
 
         <LinearLayout
@@ -290,6 +231,10 @@
                     <Button
                         android:id="@+id/installFullButton"
                         android:layout_width="170dp"
+                        android:nextFocusLeft="@id/installFullButton"
+                        android:nextFocusRight="@id/backFullButton"
+                        android:nextFocusUp="@id/installFullButton"
+                        android:nextFocusDown="@id/installFullButton"
                         android:layout_height="56dp"
                         android:background="@drawable/bg_install_button"
                         android:focusable="true"
@@ -302,6 +247,10 @@
                     <Button
                         android:id="@+id/backFullButton"
                         android:layout_width="130dp"
+                        android:nextFocusLeft="@id/installFullButton"
+                        android:nextFocusRight="@id/backFullButton"
+                        android:nextFocusUp="@id/backFullButton"
+                        android:nextFocusDown="@id/backFullButton"
                         android:layout_height="56dp"
                         android:layout_marginStart="16dp"
                         android:background="@drawable/bg_action_button"
