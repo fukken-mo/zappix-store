@@ -13,7 +13,7 @@ import coil.load
 class AppAdapter(
     private val onFocused: (StoreApp) -> Unit,
     private val onClicked: (StoreApp) -> Unit,
-    private val isInstalled: (StoreApp) -> Boolean
+    private val installState: (StoreApp) -> InstallState
 ) : ListAdapter<StoreApp, AppAdapter.AppViewHolder>(Diff) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
@@ -32,7 +32,17 @@ class AppAdapter(
 
         fun bind(app: StoreApp) {
             name.text = app.name
-            installedBadge.visibility = if (isInstalled(app)) View.VISIBLE else View.GONE
+            when (installState(app)) {
+                InstallState.INSTALLED -> {
+                    installedBadge.text = "Installed"
+                    installedBadge.visibility = View.VISIBLE
+                }
+                InstallState.UPDATE -> {
+                    installedBadge.text = "Update"
+                    installedBadge.visibility = View.VISIBLE
+                }
+                InstallState.NOT_INSTALLED -> installedBadge.visibility = View.GONE
+            }
             artwork.load(app.iconUrl) {
                 crossfade(false)
                 allowHardware(true)
