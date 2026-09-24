@@ -3,15 +3,19 @@ package com.zappix.store
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -29,6 +33,20 @@ class MainActivity : ComponentActivity() {
     private lateinit var freeTab: TextView
     private lateinit var subscriptionTab: TextView
     private lateinit var adultTab: TextView
+    private lateinit var detailsOverlay: FrameLayout
+    private lateinit var detailArtworkFull: ImageView
+    private lateinit var detailNameFull: TextView
+    private lateinit var detailTypeFull: TextView
+    private lateinit var detailDescriptionFull: TextView
+    private lateinit var detailErrorFull: TextView
+    private lateinit var installFullButton: Button
+    private lateinit var backFullButton: Button
+
+    private val detailBackCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            closeFullDetails()
+        }
+    }
 
     private var allApps: List<StoreApp> = emptyList()
     private var currentType = AppType.FREE
@@ -51,6 +69,15 @@ class MainActivity : ComponentActivity() {
         freeTab = findViewById(R.id.freeTab)
         subscriptionTab = findViewById(R.id.subscriptionTab)
         adultTab = findViewById(R.id.adultTab)
+        detailsOverlay = findViewById(R.id.detailsOverlay)
+        detailArtworkFull = findViewById(R.id.detailArtworkFull)
+        detailNameFull = findViewById(R.id.detailNameFull)
+        detailTypeFull = findViewById(R.id.detailTypeFull)
+        detailDescriptionFull = findViewById(R.id.detailDescriptionFull)
+        detailErrorFull = findViewById(R.id.detailErrorFull)
+        installFullButton = findViewById(R.id.installFullButton)
+        backFullButton = findViewById(R.id.backFullButton)
+        onBackPressedDispatcher.addCallback(this, detailBackCallback)
 
         adapter = AppAdapter(
             onFocused = { app ->
@@ -60,7 +87,7 @@ class MainActivity : ComponentActivity() {
             onClicked = { app ->
                 focusedApp = app
                 renderDetails(app)
-                installButton.requestFocus()
+                openFullDetails(app)
             }
         )
 
@@ -87,23 +114,12 @@ class MainActivity : ComponentActivity() {
         findViewById<View>(R.id.refreshButton).setOnClickListener { vm.refresh() }
 
         installButton.setOnClickListener {
-            val app = focusedApp ?: return@setOnClickListener
-            installButton.isEnabled = false
-            installButton.text = "Downloading 0%"
-            errorText.visibility = View.GONE
-            lifecycleScope.launch {
-                installer.downloadAndOpenInstaller(app) { progress ->
-                    runOnUiThread { installButton.text = "Downloading $progress%" }
-                }.onFailure { e ->
-                    runOnUiThread {
-                        errorText.text = e.message ?: "Download failed"
-                        errorText.visibility = View.VISIBLE
-                    }
-                }
-                installButton.isEnabled = true
-                installButton.text = "Install"
-            }
+            focusedApp?.let { startInstall(it, installButton, errorText) }
         }
+        installFullButton.setOnClickListener {
+            focusedApp?.let { startInstall(it, installFullButton, detailErrorFull) }
+        }
+        backFullButton.setOnClickListener { closeFullDetails() }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -173,6 +189,56 @@ class MainActivity : ComponentActivity() {
         ).forEach { (view, type) ->
             view.isSelected = type == selected
             view.alpha = if (type == selected) 1f else 0.70f
+        }
+    }
+
+    private fun openFullDetails(app: StoreApp) {
+        detailArtworkFull.load(app.iconUrl) {
+            crossfade(false)
+            allowHardware(true)
+            size(620, 620)
+        }
+        detailNameFull.text = app.name
+        detailDescriptionFull.text = app.description.ifBlank { "Ready to install from Zappix." }
+        detailTypeFull.text = when (app.type) {
+            AppType.FREE -> "FREE"
+            AppType.SUBSCRIPTION -> app.priceLabel ?: "SUBSCRIPTION"
+            AppType.ADULT -> app.priceLabel ?: "18+"
+        }
+        detailErrorFull.visibility = View.GONE
+        detailsOverlay.visibility = View.VISIBLE
+        detailBackCallback.isEnabled = true
+        installFullButton.post { installFullButton.requestFocus() }
+    }
+
+    private fun closeFullDetails() {
+        if (detailsOverlay.visibility != View.VISIBLE) return
+        detailsOverlay.visibility = View.GONE
+        detailBackCallback.isEnabled = false
+        val apps = allApps.filter { it.type == currentType }
+        val index = focusedApp?.let { app -> apps.indexOfFirst { it.id == app.id } } ?: -1
+        if (index >= 0) {
+            appsRecycler.post {
+                appsRecycler.findViewHolderForAdapterPosition(index)?.itemView?.requestFocus()
+            }
+        }
+    }
+
+    private fun startInstall(app: StoreApp, button: Button, errorView: TextView) {
+        button.isEnabled = false
+        button.text = "Downloading 0%"
+        errorView.visibility = View.GONE
+        lifecycleScope.launch {
+            installer.downloadAndOpenInstaller(app) { progress ->
+                runOnUiThread { button.text = "Downloading $progress%" }
+            }.onFailure { e ->
+                runOnUiThread {
+                    errorView.text = e.message ?: "Download failed"
+                    errorView.visibility = View.VISIBLE
+                }
+            }
+            button.isEnabled = true
+            button.text = "Install"
         }
     }
 
