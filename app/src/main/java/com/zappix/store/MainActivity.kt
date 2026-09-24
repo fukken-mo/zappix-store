@@ -70,6 +70,9 @@ class MainActivity : ComponentActivity() {
             setHasFixedSize(true)
             itemAnimator = null
             setItemViewCacheSize(12)
+            isHorizontalScrollBarEnabled = false
+            isVerticalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_NEVER
             isFocusable = false
             descendantFocusability = RecyclerView.FOCUS_AFTER_DESCENDANTS
         }
@@ -77,6 +80,10 @@ class MainActivity : ComponentActivity() {
         freeTab.setOnClickListener { showCategory(AppType.FREE) }
         subscriptionTab.setOnClickListener { showCategory(AppType.SUBSCRIPTION) }
         adultTab.setOnClickListener { showCategory(AppType.ADULT) }
+
+        freeTab.nextFocusDownId = R.id.appsRecycler
+        subscriptionTab.nextFocusDownId = R.id.appsRecycler
+        adultTab.nextFocusDownId = R.id.appsRecycler
         findViewById<View>(R.id.refreshButton).setOnClickListener { vm.refresh() }
 
         installButton.setOnClickListener {
@@ -129,6 +136,16 @@ class MainActivity : ComponentActivity() {
         updateTabs(type)
         adapter.submitList(apps) {
             appsRecycler.scrollToPosition(0)
+            val tabId = when (type) {
+                AppType.FREE -> R.id.freeTab
+                AppType.SUBSCRIPTION -> R.id.subscriptionTab
+                AppType.ADULT -> R.id.adultTab
+            }
+            appsRecycler.post {
+                for (i in 0 until appsRecycler.childCount) {
+                    appsRecycler.getChildAt(i).nextFocusUpId = tabId
+                }
+            }
             if (requestFirstFocus && apps.isNotEmpty()) {
                 appsRecycler.post {
                     appsRecycler.findViewHolderForAdapterPosition(0)?.itemView?.requestFocus()
