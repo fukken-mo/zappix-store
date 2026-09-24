@@ -80,7 +80,8 @@ class MainActivity : ComponentActivity() {
             onClicked = { app ->
                 focusedApp = app
                 openFullDetails(app)
-            }
+            },
+            isInstalled = ::isInstalled
         )
 
         appsRecycler.apply {
@@ -186,6 +187,7 @@ class MainActivity : ComponentActivity() {
             AppType.ADULT -> app.priceLabel ?: "18+"
         }
         detailErrorFull.visibility = View.GONE
+        updateInstallButton(app)
         mainContent.visibility = View.INVISIBLE
         mainContent.isEnabled = false
         detailsOverlay.visibility = View.VISIBLE
@@ -228,6 +230,31 @@ class MainActivity : ComponentActivity() {
             button.isEnabled = true
             button.text = "Install"
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::adapter.isInitialized) adapter.notifyDataSetChanged()
+        if (::detailsOverlay.isInitialized && detailsOverlay.visibility == View.VISIBLE) {
+            focusedApp?.let { updateInstallButton(it) }
+        }
+    }
+
+    private fun isInstalled(app: StoreApp): Boolean {
+        val packageName = app.packageName?.trim().orEmpty()
+        if (packageName.isEmpty()) return false
+        return try {
+            packageManager.getApplicationInfo(packageName, 0)
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun updateInstallButton(app: StoreApp) {
+        val installed = isInstalled(app)
+        installFullButton.isEnabled = !installed
+        installFullButton.text = if (installed) "Installed" else "Install"
     }
 
 }
