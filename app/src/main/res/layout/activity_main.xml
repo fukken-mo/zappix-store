@@ -73,7 +73,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
             <TextView android:id="@+id/freeTab" style="@style/ZappixTab" android:text="Free" />
@@ -85,7 +85,7 @@
             android:id="@+id/sectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:text="Free Apps"
             android:textColor="#F4F7FB"
             android:textSize="22sp"
@@ -93,7 +93,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="270dp"
+            android:layout_height="258dp"
             android:layout_marginTop="4dp"
             android:clipChildren="false"
             android:clipToPadding="false">
@@ -105,6 +105,9 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
+                android:scrollbars="none"
+                android:fadingEdge="none"
+                android:requiresFadingEdge="none"
                 android:paddingStart="20dp"
                 android:paddingTop="24dp"
                 android:paddingEnd="48dp"
@@ -121,7 +124,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:layout_weight="1"
             android:background="@drawable/bg_detail_panel"
             android:gravity="center_vertical"
