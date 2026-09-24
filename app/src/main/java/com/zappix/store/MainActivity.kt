@@ -19,6 +19,7 @@ import coil.load
 import kotlinx.coroutines.launch
 
 enum class InstallState { NOT_INSTALLED, INSTALLED, UPDATE }
+enum class StoreSection { FREE, SUBSCRIPTION, ADULT, UPDATES }
 
 class MainActivity : ComponentActivity() {
     private val vm: StoreViewModel by viewModels()
@@ -31,6 +32,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var freeTab: TextView
     private lateinit var subscriptionTab: TextView
     private lateinit var adultTab: TextView
+    private lateinit var updatesTab: TextView
     private lateinit var mainContent: View
     private lateinit var detailsOverlay: FrameLayout
     private lateinit var detailArtworkFull: ImageView
@@ -48,7 +50,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private var allApps: List<StoreApp> = emptyList()
-    private var currentType = AppType.FREE
+    private var currentSection = StoreSection.FREE
     private var focusedApp: StoreApp? = null
     private lateinit var installer: ApkInstaller
 
@@ -64,6 +66,7 @@ class MainActivity : ComponentActivity() {
         freeTab = findViewById(R.id.freeTab)
         subscriptionTab = findViewById(R.id.subscriptionTab)
         adultTab = findViewById(R.id.adultTab)
+        updatesTab = findViewById(R.id.updatesTab)
         mainContent = findViewById(R.id.mainContent)
         detailsOverlay = findViewById(R.id.detailsOverlay)
         detailArtworkFull = findViewById(R.id.detailArtworkFull)
@@ -99,17 +102,25 @@ class MainActivity : ComponentActivity() {
             descendantFocusability = RecyclerView.FOCUS_AFTER_DESCENDANTS
         }
 
-        freeTab.setOnClickListener { showCategory(AppType.FREE) }
-        subscriptionTab.setOnClickListener { showCategory(AppType.SUBSCRIPTION) }
-        adultTab.setOnClickListener { showCategory(AppType.ADULT) }
+        freeTab.setOnClickListener { showSection(StoreSection.FREE) }
+        subscriptionTab.setOnClickListener { showSection(StoreSection.SUBSCRIPTION) }
+        adultTab.setOnClickListener { showSection(StoreSection.ADULT) }
+        updatesTab.setOnClickListener { showSection(StoreSection.UPDATES) }
 
         freeTab.nextFocusDownId = R.id.appsRecycler
         subscriptionTab.nextFocusDownId = R.id.appsRecycler
         adultTab.nextFocusDownId = R.id.appsRecycler
+        updatesTab.nextFocusDownId = R.id.appsRecycler
         findViewById<View>(R.id.refreshButton).setOnClickListener { vm.refresh() }
 
         installFullButton.setOnClickListener {
-            focusedApp?.let { startInstall(it, installFullButton, detailErrorFull) }
+            focusedApp?.let { app ->
+                when (installState(app)) {
+                    InstallState.INSTALLED -> openInstalledApp(app)
+                    InstallState.NOT_INSTALLED, InstallState.UPDATE ->
+                        startInstall(app, installFullButton, detailErrorFull)
+                }
+            }
         }
         backFullButton.setOnClickListener { closeFullDetails() }
 
@@ -121,33 +132,44 @@ class MainActivity : ComponentActivity() {
                     errorText.text = state.error.orEmpty()
                     if (!state.loading && state.error == null) {
                         allApps = state.apps
-                        adultTab.visibility =
-                            if (allApps.any { it.type == AppType.ADULT }) View.VISIBLE else View.GONE
-                        if (currentType == AppType.ADULT && adultTab.visibility != View.VISIBLE) {
-                            currentType = AppType.FREE
+                        refreshDynamicTabs()
+                        if (currentSection == StoreSection.ADULT && adultTab.visibility != View.VISIBLE) {
+                            currentSection = StoreSection.FREE
                         }
-                        showCategory(currentType, requestFirstFocus = false)
+                        if (currentSection == StoreSection.UPDATES && updatesTab.visibility != View.VISIBLE) {
+                            currentSection = StoreSection.FREE
+                        }
+                        showSection(currentSection, requestFirstFocus = false)
                     }
                 }
             }
         }
     }
 
-    private fun showCategory(type: AppType, requestFirstFocus: Boolean = true) {
-        currentType = type
-        val apps = allApps.filter { it.type == type }
-        sectionTitle.text = when (type) {
-            AppType.FREE -> "Free Apps"
-            AppType.SUBSCRIPTION -> "Subscription Apps"
-            AppType.ADULT -> "Adult Apps"
+    private fun appsForSection(section: StoreSection): List<StoreApp> = when (section) {
+        StoreSection.FREE -> allApps.filter { it.type == AppType.FREE }
+        StoreSection.SUBSCRIPTION -> allApps.filter { it.type == AppType.SUBSCRIPTION }
+        StoreSection.ADULT -> allApps.filter { it.type == AppType.ADULT }
+        StoreSection.UPDATES -> allApps.filter { installState(it) == InstallState.UPDATE }
+    }
+
+    private fun showSection(section: StoreSection, requestFirstFocus: Boolean = true) {
+        currentSection = section
+        val apps = appsForSection(section)
+        sectionTitle.text = when (section) {
+            StoreSection.FREE -> "Free Apps"
+            StoreSection.SUBSCRIPTION -> "Subscription Apps"
+            StoreSection.ADULT -> "Adult Apps"
+            StoreSection.UPDATES -> "Updates Available"
         }
-        updateTabs(type)
+        updateTabs(section)
         adapter.submitList(apps) {
             appsRecycler.scrollToPosition(0)
-            val tabId = when (type) {
-                AppType.FREE -> R.id.freeTab
-                AppType.SUBSCRIPTION -> R.id.subscriptionTab
-                AppType.ADULT -> R.id.adultTab
+            val tabId = when (section) {
+                StoreSection.FREE -> R.id.freeTab
+                StoreSection.SUBSCRIPTION -> R.id.subscriptionTab
+                StoreSection.ADULT -> R.id.adultTab
+                StoreSection.UPDATES -> R.id.updatesTab
             }
             appsRecycler.post {
                 for (i in 0 until appsRecycler.childCount) {
@@ -160,19 +182,27 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
         focusedApp = apps.firstOrNull()
     }
 
-    private fun updateTabs(selected: AppType) {
+    private fun updateTabs(selected: StoreSection) {
         listOf(
-            freeTab to AppType.FREE,
-            subscriptionTab to AppType.SUBSCRIPTION,
-            adultTab to AppType.ADULT
-        ).forEach { (view, type) ->
-            view.isSelected = type == selected
-            view.alpha = if (type == selected) 1f else 0.70f
+            freeTab to StoreSection.FREE,
+            subscriptionTab to StoreSection.SUBSCRIPTION,
+            adultTab to StoreSection.ADULT,
+            updatesTab to StoreSection.UPDATES
+        ).forEach { (view, section) ->
+            view.isSelected = section == selected
+            view.alpha = if (section == selected) 1f else 0.70f
         }
+    }
+
+    private fun refreshDynamicTabs() {
+        adultTab.visibility =
+            if (allApps.any { it.type == AppType.ADULT }) View.VISIBLE else View.GONE
+        val updateCount = allApps.count { installState(it) == InstallState.UPDATE }
+        updatesTab.visibility = if (updateCount > 0) View.VISIBLE else View.GONE
+        updatesTab.text = if (updateCount > 0) "Updates  $updateCount" else "Updates"
     }
 
     private fun openFullDetails(app: StoreApp) {
@@ -207,7 +237,7 @@ class MainActivity : ComponentActivity() {
         mainContent.visibility = View.VISIBLE
         mainContent.isEnabled = true
         detailBackCallback.isEnabled = false
-        val apps = allApps.filter { it.type == currentType }
+        val apps = appsForSection(currentSection)
         val index = focusedApp?.let { app -> apps.indexOfFirst { it.id == app.id } } ?: -1
         if (index >= 0) {
             appsRecycler.post {
@@ -235,7 +265,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (::adapter.isInitialized) adapter.notifyDataSetChanged()
+        if (::adapter.isInitialized) {
+            adapter.notifyDataSetChanged()
+            refreshDynamicTabs()
+            if (currentSection == StoreSection.UPDATES && updatesTab.visibility != View.VISIBLE) {
+                currentSection = StoreSection.FREE
+            }
+            showSection(currentSection, requestFirstFocus = false)
+        }
         if (::detailsOverlay.isInitialized && detailsOverlay.visibility == View.VISIBLE) {
             focusedApp?.let { updateInstallButton(it) }
         }
@@ -267,13 +304,30 @@ class MainActivity : ComponentActivity() {
                 installFullButton.text = "Install"
             }
             InstallState.INSTALLED -> {
-                installFullButton.isEnabled = false
-                installFullButton.text = "Installed"
+                installFullButton.isEnabled = true
+                installFullButton.text = "Open"
             }
             InstallState.UPDATE -> {
                 installFullButton.isEnabled = true
                 installFullButton.text = "Update"
             }
+        }
+    }
+
+    private fun openInstalledApp(app: StoreApp) {
+        val packageName = app.packageName?.trim().orEmpty()
+        if (packageName.isEmpty()) {
+            detailErrorFull.text = "Package name unavailable."
+            detailErrorFull.visibility = View.VISIBLE
+            return
+        }
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+        if (launchIntent != null) {
+            detailErrorFull.visibility = View.GONE
+            startActivity(launchIntent)
+        } else {
+            detailErrorFull.text = "This app cannot be opened from Zappix."
+            detailErrorFull.visibility = View.VISIBLE
         }
     }
 
