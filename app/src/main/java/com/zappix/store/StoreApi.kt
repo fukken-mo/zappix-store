@@ -36,6 +36,8 @@ class StoreApi(
                             iconUrl = item.optString("icon_url"),
                             downloadUrl = item.getString("download_url"),
                             packageName = item.optString("package_name").takeIf { it.isNotBlank() },
+                            versionName = item.optString("version_name").takeIf { it.isNotBlank() },
+                            versionCode = if (item.has("version_code") && !item.isNull("version_code")) item.optLong("version_code") else null,
                             type = when (item.optString("app_type").lowercase()) {
                                 "subscription" -> AppType.SUBSCRIPTION
                                 "adult" -> AppType.ADULT
