@@ -191,4 +191,129 @@
             android:textSize="13sp"
             android:visibility="gone" />
     </LinearLayout>
+    <FrameLayout
+        android:id="@+id/detailsOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F503050A"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="86dp"
+            android:paddingTop="54dp"
+            android:paddingEnd="86dp"
+            android:paddingBottom="54dp">
+
+            <FrameLayout
+                android:layout_width="310dp"
+                android:layout_height="310dp"
+                android:background="@drawable/bg_logo_tile"
+                android:padding="18dp">
+
+                <ImageView
+                    android:id="@+id/detailArtworkFull"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="App artwork"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg_app_placeholder"
+                    android:clipToOutline="true"
+                    android:outlineProvider="background" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="APP DETAILS"
+                    android:textColor="#63DFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/detailNameFull"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="#FFFFFF"
+                    android:textSize="38sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/detailTypeFull"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="#7DE3FF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/detailDescriptionFull"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:ellipsize="end"
+                    android:maxLines="5"
+                    android:textColor="#C7D0DE"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/detailErrorFull"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="#FF8A9A"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/installFullButton"
+                        android:layout_width="170dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_install_button"
+                        android:focusable="true"
+                        android:text="Install"
+                        android:textAllCaps="false"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/backFullButton"
+                        android:layout_width="130dp"
+                        android:layout_height="56dp"
+                        android:layout_marginStart="16dp"
+                        android:background="@drawable/bg_action_button"
+                        android:focusable="true"
+                        android:text="Back"
+                        android:textAllCaps="false"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
 </FrameLayout>
