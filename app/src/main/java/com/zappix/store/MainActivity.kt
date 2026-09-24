@@ -8,6 +8,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -322,12 +323,12 @@ private fun StoreSection(
             }
         } else {
             LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
                 contentPadding = PaddingValues(
-                    start = 8.dp,
-                    end = 42.dp,
-                    top = 18.dp,
-                    bottom = 18.dp
+                    start = 18.dp,
+                    end = 54.dp,
+                    top = 30.dp,
+                    bottom = 30.dp
                 )
             ) {
                 items(apps.size, key = { apps[it].id }) { index ->
@@ -356,125 +357,153 @@ private fun AppCard(
     var focused by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
-        targetValue = if (focused) 1.07f else 1f,
-        animationSpec = tween(150),
+        targetValue = if (focused) 1.10f else 1f,
+        animationSpec = tween(145),
         label = "cardScale"
     )
-    val lift by animateDpAsState(
-        targetValue = if (focused) 8.dp else 0.dp,
-        animationSpec = tween(150),
-        label = "cardLift"
-    )
-    val focusAlpha by animateFloatAsState(
+    val glowAlpha by animateFloatAsState(
         targetValue = if (focused) 1f else 0f,
-        animationSpec = tween(140),
-        label = "focusAlpha"
+        animationSpec = tween(130),
+        label = "cardGlow"
+    )
+    val veilAlpha by animateFloatAsState(
+        targetValue = if (focused) 0.12f else 0f,
+        animationSpec = tween(120),
+        label = "cardVeil"
     )
 
-    val shape = RoundedCornerShape(28.dp)
+    val cardShape = RoundedCornerShape(24.dp)
 
-    Surface(
-        onClick = onClick,
-        color = Color.Transparent,
-        shape = shape,
+    // The outer slot NEVER changes size. This keeps the LazyRow completely
+    // stationary while only the artwork is transformed for the 3D focus effect.
+    Column(
         modifier = Modifier
-            .size(210.dp)
-            .zIndex(if (focused) 10f else 0f)
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-                translationY = -lift.toPx()
-            }
-            .shadow(
-                elevation = if (focused) 24.dp else 6.dp,
-                shape = shape,
-                ambientColor = if (focused) ElectricBlue else Color.Black,
-                spotColor = if (focused) Blue else Color.Black
-            )
-            .focusRequester(focusRequester)
-            .focusProperties {
-                upTarget?.let { up = it }
-                downTarget?.let { down = it }
-            }
-            .onFocusChanged { focused = it.isFocused }
+            .width(244.dp)
+            .height(276.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .clip(shape)
-                .background(Color(0xFF0A111D))
+                .size(230.dp)
+                .zIndex(if (focused) 10f else 0f),
+            contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
-                model = app.iconUrl,
-                contentDescription = app.name,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-
+            // Soft light bloom sits inside reserved space, so it cannot be cut off
+            // and never changes row measurement.
             Box(
                 modifier = Modifier
-                    .matchParentSize()
+                    .size(214.dp)
+                    .alpha(glowAlpha)
+                    .shadow(
+                        elevation = 34.dp,
+                        shape = RoundedCornerShape(30.dp),
+                        ambientColor = ElectricBlue,
+                        spotColor = Violet,
+                        clip = false
+                    )
+                    .clip(RoundedCornerShape(30.dp))
                     .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                Color.Transparent,
-                                Color.Transparent,
-                                Color(0xCC050912)
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Blue.copy(alpha = 0.32f),
+                                ElectricBlue.copy(alpha = 0.20f),
+                                Violet.copy(alpha = 0.08f),
+                                Color.Transparent
                             )
                         )
                     )
             )
 
-            Box(
+            Surface(
+                onClick = onClick,
+                color = Color(0xFF08101C),
+                shape = cardShape,
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = if (focused) Blue.copy(alpha = 0.42f)
+                    else Color.White.copy(alpha = 0.06f)
+                ),
                 modifier = Modifier
-                    .matchParentSize()
-                    .alpha(focusAlpha)
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                Blue.copy(alpha = 0.34f),
-                                ElectricBlue.copy(alpha = 0.24f),
-                                Violet.copy(alpha = 0.18f)
-                            )
-                        )
+                    .size(202.dp)
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        translationY = if (focused) -4.dp.toPx() else 0f
+                    }
+                    .shadow(
+                        elevation = if (focused) 18.dp else 5.dp,
+                        shape = cardShape,
+                        ambientColor = if (focused) ElectricBlue.copy(alpha = 0.55f) else Color.Black,
+                        spotColor = if (focused) Violet.copy(alpha = 0.45f) else Color.Black,
+                        clip = false
                     )
-            )
-
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 15.dp)
+                    .focusRequester(focusRequester)
+                    .focusProperties {
+                        upTarget?.let { up = it }
+                        downTarget?.let { down = it }
+                    }
+                    .onFocusChanged { focused = it.isFocused }
             ) {
-                Text(
-                    app.name,
-                    color = Color.White,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 17.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(cardShape)
+                        .background(Color(0xFF08101C))
+                ) {
+                    AsyncImage(
+                        model = app.iconUrl,
+                        contentDescription = app.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
 
-                Spacer(Modifier.height(4.dp))
+                    // Premium glass veil, intentionally subtle so artwork stays clear.
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .alpha(veilAlpha)
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(
+                                        Blue.copy(alpha = 0.70f),
+                                        ElectricBlue.copy(alpha = 0.42f),
+                                        Violet.copy(alpha = 0.30f)
+                                    )
+                                )
+                            )
+                    )
 
-                Text(
-                    when (app.type) {
-                        AppType.FREE -> "FREE"
-                        AppType.SUBSCRIPTION -> app.priceLabel ?: "SUBSCRIPTION"
-                        AppType.ADULT -> app.priceLabel ?: "18+"
-                    },
-                    color = when (app.type) {
-                        AppType.FREE -> Color(0xFF86E8FF)
-                        AppType.SUBSCRIPTION -> Color(0xFFC2B5FF)
-                        AppType.ADULT -> Color(0xFFFF8A9A)
-                    },
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                    // Small highlight for depth instead of a heavy outline.
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(46.dp)
+                            .alpha(if (focused) 0.22f else 0.08f)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color.White.copy(alpha = 0.28f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                    )
+                }
             }
         }
+
+        Spacer(Modifier.height(6.dp))
+
+        Text(
+            text = app.name,
+            color = if (focused) Color.White else Color(0xFFD8E0EC),
+            fontWeight = if (focused) FontWeight.ExtraBold else FontWeight.SemiBold,
+            fontSize = 16.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.width(214.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
     }
 }
 
