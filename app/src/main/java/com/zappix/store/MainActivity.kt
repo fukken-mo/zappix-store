@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import kotlinx.coroutines.launch
 
+enum class InstallState { NOT_INSTALLED, INSTALLED, UPDATE }
+
 class MainActivity : ComponentActivity() {
     private val vm: StoreViewModel by viewModels()
 
@@ -81,7 +83,7 @@ class MainActivity : ComponentActivity() {
                 focusedApp = app
                 openFullDetails(app)
             },
-            isInstalled = ::isInstalled
+            installState = ::installState
         )
 
         appsRecycler.apply {
@@ -227,8 +229,7 @@ class MainActivity : ComponentActivity() {
                     errorView.visibility = View.VISIBLE
                 }
             }
-            button.isEnabled = true
-            button.text = "Install"
+            updateInstallButton(app)
         }
     }
 
@@ -240,21 +241,40 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun isInstalled(app: StoreApp): Boolean {
+    private fun installState(app: StoreApp): InstallState {
         val packageName = app.packageName?.trim().orEmpty()
-        if (packageName.isEmpty()) return false
+        if (packageName.isEmpty()) return InstallState.NOT_INSTALLED
         return try {
-            packageManager.getApplicationInfo(packageName, 0)
-            true
+            val info = packageManager.getPackageInfo(packageName, 0)
+            val installedCode = if (android.os.Build.VERSION.SDK_INT >= 28) {
+                info.longVersionCode
+            } else {
+                @Suppress("DEPRECATION")
+                info.versionCode.toLong()
+            }
+            val remoteCode = app.versionCode
+            if (remoteCode != null && remoteCode > installedCode) InstallState.UPDATE
+            else InstallState.INSTALLED
         } catch (_: Exception) {
-            false
+            InstallState.NOT_INSTALLED
         }
     }
 
     private fun updateInstallButton(app: StoreApp) {
-        val installed = isInstalled(app)
-        installFullButton.isEnabled = !installed
-        installFullButton.text = if (installed) "Installed" else "Install"
+        when (installState(app)) {
+            InstallState.NOT_INSTALLED -> {
+                installFullButton.isEnabled = true
+                installFullButton.text = "Install"
+            }
+            InstallState.INSTALLED -> {
+                installFullButton.isEnabled = false
+                installFullButton.text = "Installed"
+            }
+            InstallState.UPDATE -> {
+                installFullButton.isEnabled = true
+                installFullButton.text = "Update"
+            }
+        }
     }
 
 }
