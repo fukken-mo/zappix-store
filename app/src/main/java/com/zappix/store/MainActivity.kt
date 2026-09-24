@@ -26,6 +26,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -130,10 +133,32 @@ private fun ZappixStore(vm: StoreViewModel = viewModel()) {
                     val subscription = state.apps.filter { it.type == AppType.SUBSCRIPTION }
                     val adult = state.apps.filter { it.type == AppType.ADULT }
 
+                    val freeFocus = remember(free.map { it.id }) {
+                        List(free.size) { FocusRequester() }
+                    }
+                    val subscriptionFocus = remember(subscription.map { it.id }) {
+                        List(subscription.size) { FocusRequester() }
+                    }
+                    val adultFocus = remember(adult.map { it.id }) {
+                        List(adult.size) { FocusRequester() }
+                    }
+
+                    fun targetAt(list: List<FocusRequester>, index: Int): FocusRequester? =
+                        list.getOrNull(index.coerceAtMost((list.size - 1).coerceAtLeast(0)))
+
                     StoreSection(
                         title = "Free Apps",
                         subtitle = "Install and start using",
                         apps = free,
+                        focusRequesters = freeFocus,
+                        upTargets = emptyList(),
+                        downTargets = free.indices.map { index ->
+                            when {
+                                subscriptionFocus.isNotEmpty() -> targetAt(subscriptionFocus, index)
+                                adultFocus.isNotEmpty() -> targetAt(adultFocus, index)
+                                else -> null
+                            }
+                        },
                         onOpen = { selected = it }
                     )
 
@@ -143,6 +168,13 @@ private fun ZappixStore(vm: StoreViewModel = viewModel()) {
                         title = "Subscription Apps",
                         subtitle = "Premium services and memberships",
                         apps = subscription,
+                        focusRequesters = subscriptionFocus,
+                        upTargets = subscription.indices.map { index ->
+                            if (freeFocus.isNotEmpty()) targetAt(freeFocus, index) else null
+                        },
+                        downTargets = subscription.indices.map { index ->
+                            if (adultFocus.isNotEmpty()) targetAt(adultFocus, index) else null
+                        },
                         onOpen = { selected = it }
                     )
 
@@ -153,6 +185,15 @@ private fun ZappixStore(vm: StoreViewModel = viewModel()) {
                             title = "Adult Apps",
                             subtitle = "18+ apps",
                             apps = adult,
+                            focusRequesters = adultFocus,
+                            upTargets = adult.indices.map { index ->
+                                when {
+                                    subscriptionFocus.isNotEmpty() -> targetAt(subscriptionFocus, index)
+                                    freeFocus.isNotEmpty() -> targetAt(freeFocus, index)
+                                    else -> null
+                                }
+                            },
+                            downTargets = emptyList(),
                             onOpen = { selected = it }
                         )
                     }
@@ -211,6 +252,9 @@ private fun StoreSection(
     title: String,
     subtitle: String,
     apps: List<StoreApp>,
+    focusRequesters: List<FocusRequester>,
+    upTargets: List<FocusRequester?>,
+    downTargets: List<FocusRequester?>,
     onOpen: (StoreApp) -> Unit
 ) {
     Column {
@@ -286,8 +330,15 @@ private fun StoreSection(
                     bottom = 18.dp
                 )
             ) {
-                items(apps, key = { it.id }) { app ->
-                    AppCard(app, onClick = { onOpen(app) })
+                items(apps.size, key = { apps[it].id }) { index ->
+                    val app = apps[index]
+                    AppCard(
+                        app = app,
+                        focusRequester = focusRequesters[index],
+                        upTarget = upTargets.getOrNull(index),
+                        downTarget = downTargets.getOrNull(index),
+                        onClick = { onOpen(app) }
+                    )
                 }
             }
         }
@@ -295,7 +346,13 @@ private fun StoreSection(
 }
 
 @Composable
-private fun AppCard(app: StoreApp, onClick: () -> Unit) {
+private fun AppCard(
+    app: StoreApp,
+    focusRequester: FocusRequester,
+    upTarget: FocusRequester?,
+    downTarget: FocusRequester?,
+    onClick: () -> Unit
+) {
     var focused by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
@@ -334,8 +391,12 @@ private fun AppCard(app: StoreApp, onClick: () -> Unit) {
                 ambientColor = if (focused) ElectricBlue else Color.Black,
                 spotColor = if (focused) Blue else Color.Black
             )
+            .focusRequester(focusRequester)
+            .focusProperties {
+                upTarget?.let { up = it }
+                downTarget?.let { down = it }
+            }
             .onFocusChanged { focused = it.isFocused }
-            .focusable()
     ) {
         Box(
             modifier = Modifier
