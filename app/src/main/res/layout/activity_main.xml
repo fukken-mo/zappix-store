@@ -80,6 +80,12 @@
             <TextView android:id="@+id/freeTab" style="@style/ZappixTab" android:text="Free" />
             <TextView android:id="@+id/subscriptionTab" style="@style/ZappixTab" android:layout_marginStart="12dp" android:text="Subscription" />
             <TextView android:id="@+id/adultTab" style="@style/ZappixTab" android:layout_marginStart="12dp" android:text="Adult 18+" />
+            <TextView
+                android:id="@+id/updatesTab"
+                style="@style/ZappixTab"
+                android:layout_marginStart="12dp"
+                android:text="Updates"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
