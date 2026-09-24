@@ -36,16 +36,15 @@ class AppAdapter(
                 size(420, 420)
             }
 
-            itemView.nextFocusUpId = R.id.freeTab
             itemView.nextFocusDownId = R.id.installButton
 
             itemView.setOnFocusChangeListener { _, focused ->
                 itemView.animate().cancel()
                 itemView.animate()
-                    .scaleX(if (focused) 1.105f else 1f)
-                    .scaleY(if (focused) 1.105f else 1f)
-                    .translationY(if (focused) -7f else 0f)
-                    .setDuration(if (focused) 115L else 90L)
+                    .scaleX(if (focused) 1.075f else 1f)
+                    .scaleY(if (focused) 1.075f else 1f)
+                    .translationY(if (focused) -4f else 0f)
+                    .setDuration(if (focused) 105L else 85L)
                     .start()
 
                 itemView.elevation = if (focused) 24f else 2f
