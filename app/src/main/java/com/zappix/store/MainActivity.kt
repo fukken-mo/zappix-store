@@ -26,13 +26,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var loading: ProgressBar
     private lateinit var errorText: TextView
     private lateinit var sectionTitle: TextView
-    private lateinit var detailName: TextView
-    private lateinit var detailDescription: TextView
-    private lateinit var detailType: TextView
-    private lateinit var installButton: Button
     private lateinit var freeTab: TextView
     private lateinit var subscriptionTab: TextView
     private lateinit var adultTab: TextView
+    private lateinit var mainContent: View
     private lateinit var detailsOverlay: FrameLayout
     private lateinit var detailArtworkFull: ImageView
     private lateinit var detailNameFull: TextView
@@ -62,13 +59,10 @@ class MainActivity : ComponentActivity() {
         loading = findViewById(R.id.loading)
         errorText = findViewById(R.id.errorText)
         sectionTitle = findViewById(R.id.sectionTitle)
-        detailName = findViewById(R.id.detailName)
-        detailDescription = findViewById(R.id.detailDescription)
-        detailType = findViewById(R.id.detailType)
-        installButton = findViewById(R.id.installButton)
         freeTab = findViewById(R.id.freeTab)
         subscriptionTab = findViewById(R.id.subscriptionTab)
         adultTab = findViewById(R.id.adultTab)
+        mainContent = findViewById(R.id.mainContent)
         detailsOverlay = findViewById(R.id.detailsOverlay)
         detailArtworkFull = findViewById(R.id.detailArtworkFull)
         detailNameFull = findViewById(R.id.detailNameFull)
@@ -82,11 +76,9 @@ class MainActivity : ComponentActivity() {
         adapter = AppAdapter(
             onFocused = { app ->
                 focusedApp = app
-                renderDetails(app)
             },
             onClicked = { app ->
                 focusedApp = app
-                renderDetails(app)
                 openFullDetails(app)
             }
         )
@@ -113,9 +105,6 @@ class MainActivity : ComponentActivity() {
         adultTab.nextFocusDownId = R.id.appsRecycler
         findViewById<View>(R.id.refreshButton).setOnClickListener { vm.refresh() }
 
-        installButton.setOnClickListener {
-            focusedApp?.let { startInstall(it, installButton, errorText) }
-        }
         installFullButton.setOnClickListener {
             focusedApp?.let { startInstall(it, installFullButton, detailErrorFull) }
         }
@@ -169,16 +158,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        if (apps.isNotEmpty()) {
-            focusedApp = apps.first()
-            renderDetails(apps.first())
-        } else {
-            focusedApp = null
-            detailName.text = "No apps yet"
-            detailDescription.text = "This category is currently empty."
-            detailType.text = ""
-            installButton.isEnabled = false
-        }
+        focusedApp = apps.firstOrNull()
     }
 
     private fun updateTabs(selected: AppType) {
@@ -206,14 +186,22 @@ class MainActivity : ComponentActivity() {
             AppType.ADULT -> app.priceLabel ?: "18+"
         }
         detailErrorFull.visibility = View.GONE
+        mainContent.visibility = View.INVISIBLE
+        mainContent.isEnabled = false
         detailsOverlay.visibility = View.VISIBLE
+        detailsOverlay.bringToFront()
         detailBackCallback.isEnabled = true
-        installFullButton.post { installFullButton.requestFocus() }
+        installFullButton.post {
+            installFullButton.isFocusable = true
+            installFullButton.requestFocus()
+        }
     }
 
     private fun closeFullDetails() {
         if (detailsOverlay.visibility != View.VISIBLE) return
         detailsOverlay.visibility = View.GONE
+        mainContent.visibility = View.VISIBLE
+        mainContent.isEnabled = true
         detailBackCallback.isEnabled = false
         val apps = allApps.filter { it.type == currentType }
         val index = focusedApp?.let { app -> apps.indexOfFirst { it.id == app.id } } ?: -1
@@ -242,14 +230,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun renderDetails(app: StoreApp) {
-        detailName.text = app.name
-        detailDescription.text = app.description.ifBlank { "Ready to install from Zappix." }
-        detailType.text = when (app.type) {
-            AppType.FREE -> "FREE"
-            AppType.SUBSCRIPTION -> app.priceLabel ?: "SUBSCRIPTION"
-            AppType.ADULT -> app.priceLabel ?: "18+"
-        }
-        installButton.isEnabled = true
-    }
 }
