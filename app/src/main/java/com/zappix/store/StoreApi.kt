@@ -41,6 +41,7 @@ class StoreApi(
                             type = when (item.optString("app_type").lowercase()) {
                                 "subscription" -> AppType.SUBSCRIPTION
                                 "adult" -> AppType.ADULT
+                                "tools" -> AppType.TOOLS
                                 else -> AppType.FREE
                             },
                             priceLabel = item.optString("price_label").takeIf { it.isNotBlank() }
