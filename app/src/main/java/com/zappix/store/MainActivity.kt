@@ -380,23 +380,29 @@ class MainActivity : ComponentActivity() {
             detailErrorFull.visibility = View.VISIBLE
             return
         }
-        try {
-            detailErrorFull.visibility = View.GONE
-            val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
-                data = Uri.parse("package:$packageName")
-                putExtra(Intent.EXTRA_RETURN_RESULT, false)
-            }
-            startActivity(intent)
-        } catch (_: Exception) {
-            try {
-                val fallback = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.parse("package:$packageName")
-                }
-                startActivity(fallback)
-            } catch (e: Exception) {
-                detailErrorFull.text = e.message ?: "Unable to open uninstall screen."
-                detailErrorFull.visibility = View.VISIBLE
-            }
+        detailErrorFull.visibility = View.GONE
+
+        val uninstallIntent = Intent(Intent.ACTION_DELETE).apply {
+            data = Uri.parse("package:$packageName")
+            addCategory(Intent.CATEGORY_DEFAULT)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+
+        val canUninstall = uninstallIntent.resolveActivity(packageManager) != null
+        if (canUninstall) {
+            startActivity(uninstallIntent)
+            return
+        }
+
+        val settingsIntent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.parse("package:$packageName")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        if (settingsIntent.resolveActivity(packageManager) != null) {
+            startActivity(settingsIntent)
+        } else {
+            detailErrorFull.text = "This TV does not provide an uninstall screen."
+            detailErrorFull.visibility = View.VISIBLE
         }
     }
 
