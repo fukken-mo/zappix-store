@@ -382,13 +382,21 @@ class MainActivity : ComponentActivity() {
         }
         try {
             detailErrorFull.visibility = View.GONE
-            val intent = Intent(Intent.ACTION_DELETE).apply {
+            val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
                 data = Uri.parse("package:$packageName")
+                putExtra(Intent.EXTRA_RETURN_RESULT, false)
             }
             startActivity(intent)
-        } catch (e: Exception) {
-            detailErrorFull.text = e.message ?: "Unable to open uninstall screen."
-            detailErrorFull.visibility = View.VISIBLE
+        } catch (_: Exception) {
+            try {
+                val fallback = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.parse("package:$packageName")
+                }
+                startActivity(fallback)
+            } catch (e: Exception) {
+                detailErrorFull.text = e.message ?: "Unable to open uninstall screen."
+                detailErrorFull.visibility = View.VISIBLE
+            }
         }
     }
 
