@@ -22,8 +22,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
+            // Keep the production package name so the installable APK upgrades Zappix in place.
         }
         release {
             isMinifyEnabled = true
