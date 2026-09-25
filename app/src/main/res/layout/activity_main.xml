@@ -81,6 +81,12 @@
             <TextView android:id="@+id/subscriptionTab" style="@style/ZappixTab" android:layout_marginStart="12dp" android:text="Subscription" />
             <TextView android:id="@+id/adultTab" style="@style/ZappixTab" android:layout_marginStart="12dp" android:text="Adult 18+" />
             <TextView
+                android:id="@+id/toolsTab"
+                style="@style/ZappixTab"
+                android:layout_marginStart="12dp"
+                android:text="Tools"
+                android:visibility="gone" />
+            <TextView
                 android:id="@+id/updatesTab"
                 style="@style/ZappixTab"
                 android:layout_marginStart="12dp"
