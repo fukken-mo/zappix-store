@@ -232,7 +232,13 @@ class MainActivity : ComponentActivity() {
             size(620, 620)
         }
         detailNameFull.text = app.name
-        detailDescriptionFull.text = app.description.ifBlank { "Ready to install from Zappix." }
+        detailDescriptionFull.text = app.description.ifBlank {
+            when (installState(app)) {
+                InstallState.NOT_INSTALLED -> "Ready to install from Zappix."
+                InstallState.INSTALLED -> "Installed and ready to open."
+                InstallState.UPDATE -> "A newer version is available."
+            }
+        }
         detailTypeFull.text = when (app.type) {
             AppType.FREE -> "FREE"
             AppType.SUBSCRIPTION -> app.priceLabel ?: "SUBSCRIPTION"
@@ -323,6 +329,16 @@ class MainActivity : ComponentActivity() {
         uninstallFullButton.visibility =
             if (state == InstallState.INSTALLED || state == InstallState.UPDATE) View.VISIBLE else View.GONE
         uninstallFullButton.isEnabled = uninstallFullButton.visibility == View.VISIBLE
+
+        if (uninstallFullButton.visibility == View.VISIBLE) {
+            installFullButton.nextFocusRightId = R.id.uninstallFullButton
+            uninstallFullButton.nextFocusLeftId = R.id.installFullButton
+            uninstallFullButton.nextFocusRightId = R.id.backFullButton
+            backFullButton.nextFocusLeftId = R.id.uninstallFullButton
+        } else {
+            installFullButton.nextFocusRightId = R.id.backFullButton
+            backFullButton.nextFocusLeftId = R.id.installFullButton
+        }
 
         when (state) {
             InstallState.NOT_INSTALLED -> {
