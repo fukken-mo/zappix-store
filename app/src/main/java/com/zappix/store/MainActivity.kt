@@ -19,7 +19,7 @@ import coil.load
 import kotlinx.coroutines.launch
 
 enum class InstallState { NOT_INSTALLED, INSTALLED, UPDATE }
-enum class StoreSection { FREE, SUBSCRIPTION, ADULT, UPDATES }
+enum class StoreSection { FREE, SUBSCRIPTION, ADULT, TOOLS, UPDATES }
 
 class MainActivity : ComponentActivity() {
     private val vm: StoreViewModel by viewModels()
@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var freeTab: TextView
     private lateinit var subscriptionTab: TextView
     private lateinit var adultTab: TextView
+    private lateinit var toolsTab: TextView
     private lateinit var updatesTab: TextView
     private lateinit var mainContent: View
     private lateinit var detailsOverlay: FrameLayout
@@ -66,6 +67,7 @@ class MainActivity : ComponentActivity() {
         freeTab = findViewById(R.id.freeTab)
         subscriptionTab = findViewById(R.id.subscriptionTab)
         adultTab = findViewById(R.id.adultTab)
+        toolsTab = findViewById(R.id.toolsTab)
         updatesTab = findViewById(R.id.updatesTab)
         mainContent = findViewById(R.id.mainContent)
         detailsOverlay = findViewById(R.id.detailsOverlay)
@@ -105,11 +107,13 @@ class MainActivity : ComponentActivity() {
         freeTab.setOnClickListener { showSection(StoreSection.FREE) }
         subscriptionTab.setOnClickListener { showSection(StoreSection.SUBSCRIPTION) }
         adultTab.setOnClickListener { showSection(StoreSection.ADULT) }
+        toolsTab.setOnClickListener { showSection(StoreSection.TOOLS) }
         updatesTab.setOnClickListener { showSection(StoreSection.UPDATES) }
 
         freeTab.nextFocusDownId = R.id.appsRecycler
         subscriptionTab.nextFocusDownId = R.id.appsRecycler
         adultTab.nextFocusDownId = R.id.appsRecycler
+        toolsTab.nextFocusDownId = R.id.appsRecycler
         updatesTab.nextFocusDownId = R.id.appsRecycler
         findViewById<View>(R.id.refreshButton).setOnClickListener { vm.refresh() }
 
@@ -136,6 +140,9 @@ class MainActivity : ComponentActivity() {
                         if (currentSection == StoreSection.ADULT && adultTab.visibility != View.VISIBLE) {
                             currentSection = StoreSection.FREE
                         }
+                        if (currentSection == StoreSection.TOOLS && toolsTab.visibility != View.VISIBLE) {
+                            currentSection = StoreSection.FREE
+                        }
                         if (currentSection == StoreSection.UPDATES && updatesTab.visibility != View.VISIBLE) {
                             currentSection = StoreSection.FREE
                         }
@@ -150,6 +157,7 @@ class MainActivity : ComponentActivity() {
         StoreSection.FREE -> allApps.filter { it.type == AppType.FREE }
         StoreSection.SUBSCRIPTION -> allApps.filter { it.type == AppType.SUBSCRIPTION }
         StoreSection.ADULT -> allApps.filter { it.type == AppType.ADULT }
+        StoreSection.TOOLS -> allApps.filter { it.type == AppType.TOOLS }
         StoreSection.UPDATES -> allApps.filter { installState(it) == InstallState.UPDATE }
     }
 
@@ -160,6 +168,7 @@ class MainActivity : ComponentActivity() {
             StoreSection.FREE -> "Free Apps"
             StoreSection.SUBSCRIPTION -> "Subscription Apps"
             StoreSection.ADULT -> "Adult Apps"
+            StoreSection.TOOLS -> "Tools"
             StoreSection.UPDATES -> "Updates Available"
         }
         updateTabs(section)
@@ -169,6 +178,7 @@ class MainActivity : ComponentActivity() {
                 StoreSection.FREE -> R.id.freeTab
                 StoreSection.SUBSCRIPTION -> R.id.subscriptionTab
                 StoreSection.ADULT -> R.id.adultTab
+                StoreSection.TOOLS -> R.id.toolsTab
                 StoreSection.UPDATES -> R.id.updatesTab
             }
             appsRecycler.post {
@@ -190,6 +200,7 @@ class MainActivity : ComponentActivity() {
             freeTab to StoreSection.FREE,
             subscriptionTab to StoreSection.SUBSCRIPTION,
             adultTab to StoreSection.ADULT,
+            toolsTab to StoreSection.TOOLS,
             updatesTab to StoreSection.UPDATES
         ).forEach { (view, section) ->
             view.isSelected = section == selected
@@ -200,6 +211,8 @@ class MainActivity : ComponentActivity() {
     private fun refreshDynamicTabs() {
         adultTab.visibility =
             if (allApps.any { it.type == AppType.ADULT }) View.VISIBLE else View.GONE
+        toolsTab.visibility =
+            if (allApps.any { it.type == AppType.TOOLS }) View.VISIBLE else View.GONE
         val updateCount = allApps.count { installState(it) == InstallState.UPDATE }
         updatesTab.visibility = if (updateCount > 0) View.VISIBLE else View.GONE
         updatesTab.text = if (updateCount > 0) "Updates  $updateCount" else "Updates"
@@ -217,6 +230,7 @@ class MainActivity : ComponentActivity() {
             AppType.FREE -> "FREE"
             AppType.SUBSCRIPTION -> app.priceLabel ?: "SUBSCRIPTION"
             AppType.ADULT -> app.priceLabel ?: "18+"
+            AppType.TOOLS -> "TOOLS"
         }
         detailErrorFull.visibility = View.GONE
         updateInstallButton(app)
