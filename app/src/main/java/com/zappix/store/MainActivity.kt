@@ -1,6 +1,8 @@
 package com.zappix.store
 
 import android.os.Bundle
+import android.content.Intent
+import android.net.Uri
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
@@ -42,6 +44,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var detailDescriptionFull: TextView
     private lateinit var detailErrorFull: TextView
     private lateinit var installFullButton: Button
+    private lateinit var uninstallFullButton: Button
     private lateinit var backFullButton: Button
 
     private val detailBackCallback = object : OnBackPressedCallback(false) {
@@ -77,6 +80,7 @@ class MainActivity : ComponentActivity() {
         detailDescriptionFull = findViewById(R.id.detailDescriptionFull)
         detailErrorFull = findViewById(R.id.detailErrorFull)
         installFullButton = findViewById(R.id.installFullButton)
+        uninstallFullButton = findViewById(R.id.uninstallFullButton)
         backFullButton = findViewById(R.id.backFullButton)
         onBackPressedDispatcher.addCallback(this, detailBackCallback)
 
@@ -125,6 +129,9 @@ class MainActivity : ComponentActivity() {
                         startInstall(app, installFullButton, detailErrorFull)
                 }
             }
+        }
+        uninstallFullButton.setOnClickListener {
+            focusedApp?.let { uninstallInstalledApp(it) }
         }
         backFullButton.setOnClickListener { closeFullDetails() }
 
@@ -312,7 +319,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun updateInstallButton(app: StoreApp) {
-        when (installState(app)) {
+        val state = installState(app)
+        uninstallFullButton.visibility =
+            if (state == InstallState.INSTALLED || state == InstallState.UPDATE) View.VISIBLE else View.GONE
+        uninstallFullButton.isEnabled = uninstallFullButton.visibility == View.VISIBLE
+
+        when (state) {
             InstallState.NOT_INSTALLED -> {
                 installFullButton.isEnabled = true
                 installFullButton.text = "Install"
@@ -344,5 +356,25 @@ class MainActivity : ComponentActivity() {
             detailErrorFull.visibility = View.VISIBLE
         }
     }
+
+    private fun uninstallInstalledApp(app: StoreApp) {
+        val packageName = app.packageName?.trim().orEmpty()
+        if (packageName.isEmpty()) {
+            detailErrorFull.text = "Package name unavailable."
+            detailErrorFull.visibility = View.VISIBLE
+            return
+        }
+        try {
+            detailErrorFull.visibility = View.GONE
+            val intent = Intent(Intent.ACTION_DELETE).apply {
+                data = Uri.parse("package:$packageName")
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            detailErrorFull.text = e.message ?: "Unable to open uninstall screen."
+            detailErrorFull.visibility = View.VISIBLE
+        }
+    }
+
 
 }
