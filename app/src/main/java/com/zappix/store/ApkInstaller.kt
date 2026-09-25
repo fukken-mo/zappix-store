@@ -29,14 +29,22 @@ class ApkInstaller(private val context: Context) {
             val uri = Uri.parse(app.downloadUrl)
             require(uri.scheme == "https" || uri.scheme == "http") { "Invalid download URL" }
 
-            val request = Request.Builder().url(app.downloadUrl).build()
+            val request = Request.Builder()
+                .url(app.downloadUrl)
+                .header("Cache-Control", "no-cache, no-store")
+                .header("Pragma", "no-cache")
+                .build()
             client.newCall(request).execute().use { response ->
                 check(response.isSuccessful) { "Download failed (${response.code})" }
                 val body = response.body ?: error("Empty download")
                 val total = body.contentLength()
-                val dir = File(context.cacheDir, "apks").apply { mkdirs() }
+                val dir = File(context.cacheDir, "apks").apply {
+                    mkdirs()
+                    listFiles()?.forEach { old -> old.delete() }
+                }
                 val safeName = app.name.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-').ifBlank { "zappix-app" }
-                val file = File(dir, "$safeName.apk")
+                val versionPart = app.versionCode?.toString() ?: "unknown"
+                val file = File(dir, "$safeName-${app.id}-$versionPart-${System.currentTimeMillis()}.apk")
 
                 body.byteStream().use { input ->
                     file.outputStream().use { output ->
@@ -52,6 +60,18 @@ class ApkInstaller(private val context: Context) {
                             }
                         }
                     }
+                }
+
+                val archiveInfo = context.packageManager.getPackageArchiveInfo(file.absolutePath, 0)
+                    ?: error("Downloaded file is not a valid Android APK.")
+
+                val downloadedPackage = archiveInfo.packageName
+                val expectedPackage = app.packageName?.trim().orEmpty()
+                if (expectedPackage.isNotEmpty() && downloadedPackage != expectedPackage) {
+                    file.delete()
+                    error(
+                        "Wrong APK returned by server. Expected $expectedPackage but downloaded $downloadedPackage."
+                    )
                 }
 
                 val contentUri = FileProvider.getUriForFile(
