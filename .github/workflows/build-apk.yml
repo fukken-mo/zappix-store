@@ -43,7 +43,12 @@ jobs:
           test -n "$ZAPPIX_KEY_ALIAS"
           test -n "$ZAPPIX_KEY_PASSWORD"
           gradle assembleRelease
+          test -f app/build/outputs/apk/release/app-release.apk
           cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Zappix-v1.0.15.apk
+
+      - name: Verify APK signature
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/release/Zappix-v1.0.15.apk
 
       - name: Upload signed Zappix APK
         uses: actions/upload-artifact@v4
