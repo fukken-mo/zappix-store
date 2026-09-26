@@ -25,13 +25,40 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build installable Zappix APK
+      - name: Restore permanent Zappix signing key
+        if: ${{ secrets.ZAPPIX_KEYSTORE_BASE64 != '' }}
+        env:
+          ZAPPIX_KEYSTORE_BASE64: ${{ secrets.ZAPPIX_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ZAPPIX_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/zappix-release.jks"
+
+      - name: Build permanently signed release APK
+        if: ${{ secrets.ZAPPIX_KEYSTORE_BASE64 != '' }}
+        env:
+          ZAPPIX_KEYSTORE_PATH: ${{ runner.temp }}/zappix-release.jks
+          ZAPPIX_KEYSTORE_PASSWORD: ${{ secrets.ZAPPIX_KEYSTORE_PASSWORD }}
+          ZAPPIX_KEY_ALIAS: ${{ secrets.ZAPPIX_KEY_ALIAS }}
+          ZAPPIX_KEY_PASSWORD: ${{ secrets.ZAPPIX_KEY_PASSWORD }}
+        run: |
+          gradle assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Zappix-v1.0.15.apk
+
+      - name: Build test APK when signing secrets are not configured
+        if: ${{ secrets.ZAPPIX_KEYSTORE_BASE64 == '' }}
         run: |
           gradle assembleDebug
-          cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/Zappix-v1.0.14.apk
+          cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/Zappix-v1.0.15-TEST.apk
 
-      - name: Upload Zappix APK
+      - name: Upload signed Zappix APK
+        if: ${{ secrets.ZAPPIX_KEYSTORE_BASE64 != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: Zappix-APK
-          path: app/build/outputs/apk/debug/Zappix-v1.0.14.apk
+          path: app/build/outputs/apk/release/Zappix-v1.0.15.apk
+
+      - name: Upload unsigned-test Zappix APK
+        if: ${{ secrets.ZAPPIX_KEYSTORE_BASE64 == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zappix-APK-TEST
+          path: app/build/outputs/apk/debug/Zappix-v1.0.15-TEST.apk
