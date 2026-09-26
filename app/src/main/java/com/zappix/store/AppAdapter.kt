@@ -60,6 +60,9 @@ class AppAdapter(
 
                 itemView.elevation = if (focused) 24f else 2f
                 frame.visibility = if (focused) View.VISIBLE else View.INVISIBLE
+                frame.alpha = if (focused) 1f else 0f
+                frame.scaleX = if (focused) 1f else 0.96f
+                frame.scaleY = if (focused) 1f else 0.96f
                 name.alpha = if (focused) 1f else 0.78f
                 if (focused) onFocused(app)
             }
