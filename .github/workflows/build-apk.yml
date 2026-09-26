@@ -25,15 +25,28 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build release APK
-        run: gradle assembleRelease
-
-      - name: Prepare release artifact
+      - name: Restore permanent Zappix signing key
+        env:
+          ZAPPIX_KEYSTORE_BASE64: ${{ secrets.ZAPPIX_KEYSTORE_BASE64 }}
         run: |
-          cp app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/Zappix-v1.0.15-UNSIGNED.apk
+          test -n "$ZAPPIX_KEYSTORE_BASE64"
+          echo "$ZAPPIX_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/zappix-release.jks"
 
-      - name: Upload release APK
+      - name: Build permanently signed release APK
+        env:
+          ZAPPIX_KEYSTORE_PATH: ${{ runner.temp }}/zappix-release.jks
+          ZAPPIX_KEYSTORE_PASSWORD: ${{ secrets.ZAPPIX_KEYSTORE_PASSWORD }}
+          ZAPPIX_KEY_ALIAS: ${{ secrets.ZAPPIX_KEY_ALIAS }}
+          ZAPPIX_KEY_PASSWORD: ${{ secrets.ZAPPIX_KEY_PASSWORD }}
+        run: |
+          test -n "$ZAPPIX_KEYSTORE_PASSWORD"
+          test -n "$ZAPPIX_KEY_ALIAS"
+          test -n "$ZAPPIX_KEY_PASSWORD"
+          gradle assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Zappix-v1.0.15.apk
+
+      - name: Upload signed Zappix APK
         uses: actions/upload-artifact@v4
         with:
-          name: Zappix-Release-Unsigned
-          path: app/build/outputs/apk/release/Zappix-v1.0.15-UNSIGNED.apk
+          name: Zappix-APK-SIGNED
+          path: app/build/outputs/apk/release/Zappix-v1.0.15.apk
