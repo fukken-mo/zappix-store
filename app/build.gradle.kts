@@ -11,8 +11,8 @@ android {
         applicationId = "com.zappix.store"
         minSdk = 23
         targetSdk = 35
-        versionCode = 23
-        versionName = "1.0.14"
+        versionCode = 24
+        versionName = "1.0.15"
 
         val apiBase = providers.gradleProperty("ZAPPIX_API_BASE_URL")
             .orElse("https://panelsandapps.com/panels/Zappix/api/")
@@ -20,13 +20,26 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"$apiBase\"")
     }
 
+    signingConfigs {
+        create("release") {
+            val storePath = System.getenv("ZAPPIX_KEYSTORE_PATH")
+            if (!storePath.isNullOrBlank()) {
+                storeFile = file(storePath)
+                storePassword = System.getenv("ZAPPIX_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ZAPPIX_KEY_ALIAS")
+                keyPassword = System.getenv("ZAPPIX_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         debug {
-            // Keep the production package name so the installable APK upgrades Zappix in place.
+            // Test builds keep the production package name.
         }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
