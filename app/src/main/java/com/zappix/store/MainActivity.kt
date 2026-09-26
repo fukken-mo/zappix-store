@@ -9,6 +9,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import android.app.AlertDialog
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -57,6 +59,7 @@ class MainActivity : ComponentActivity() {
     private var currentSection = StoreSection.FREE
     private var focusedApp: StoreApp? = null
     private lateinit var installer: ApkInstaller
+    private val updateChecker = ZappixUpdateChecker()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,6 +161,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        checkForZappixUpdate()
     }
 
     private fun appsForSection(section: StoreSection): List<StoreApp> = when (section) {
@@ -274,6 +279,16 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startInstall(app: StoreApp, button: Button, errorView: TextView) {
+        val pkg = app.packageName?.trim().orEmpty()
+        val duplicate = if (pkg.isNotEmpty()) {
+            allApps.firstOrNull { it.id != app.id && it.packageName?.trim() == pkg }
+        } else null
+        if (duplicate != null) {
+            errorView.text = "Install blocked: ${app.name} and ${duplicate.name} use the same Android package ($pkg). They cannot be installed as separate apps."
+            errorView.visibility = View.VISIBLE
+            return
+        }
+
         button.isEnabled = false
         button.text = "Downloading 0%"
         errorView.visibility = View.GONE
@@ -403,6 +418,63 @@ class MainActivity : ComponentActivity() {
         } else {
             detailErrorFull.text = "This TV does not provide an uninstall screen."
             detailErrorFull.visibility = View.VISIBLE
+        }
+    }
+
+
+    private fun checkForZappixUpdate() {
+        lifecycleScope.launch {
+            val info = updateChecker.check().getOrNull() ?: return@launch
+            if (info.versionCode <= BuildConfig.VERSION_CODE || info.apkUrl.isBlank()) return@launch
+
+            val builder = AlertDialog.Builder(this@MainActivity)
+                .setTitle("Zappix Update Available")
+                .setMessage(
+                    buildString {
+                        append("Version ")
+                        append(info.versionName.ifBlank { info.versionCode.toString() })
+                        append(" is available.")
+                        if (info.message.isNotBlank()) {
+                            append("\n\n")
+                            append(info.message)
+                        }
+                    }
+                )
+                .setPositiveButton("Update") { _, _ -> installZappixUpdate(info) }
+
+            if (!info.required) {
+                builder.setNegativeButton("Later", null)
+            } else {
+                builder.setCancelable(false)
+            }
+            builder.show()
+        }
+    }
+
+    private fun installZappixUpdate(info: ZappixUpdateInfo) {
+        Toast.makeText(this, "Downloading Zappix update…", Toast.LENGTH_SHORT).show()
+        val self = StoreApp(
+            id = -1000,
+            name = "Zappix",
+            description = "",
+            iconUrl = "",
+            downloadUrl = info.apkUrl,
+            packageName = packageName,
+            versionName = info.versionName,
+            versionCode = info.versionCode,
+            type = AppType.TOOLS,
+            priceLabel = null
+        )
+        lifecycleScope.launch {
+            installer.downloadAndOpenInstaller(self).onFailure { e ->
+                runOnUiThread {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle("Update Failed")
+                        .setMessage(e.message ?: "Unable to download the Zappix update.")
+                        .setPositiveButton("OK", null)
+                        .show()
+                }
+            }
         }
     }
 
