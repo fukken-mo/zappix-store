@@ -67,10 +67,14 @@ class ApkInstaller(private val context: Context) {
 
                 val downloadedPackage = archiveInfo.packageName
                 val expectedPackage = app.packageName?.trim().orEmpty()
-                if (expectedPackage.isNotEmpty() && downloadedPackage != expectedPackage) {
+                require(expectedPackage.isNotEmpty()) {
+                    "This app has no verified package name. Re-save it in the Zappix panel before installing."
+                }
+                if (downloadedPackage != expectedPackage) {
+                    val finalUrl = response.request.url.toString()
                     file.delete()
                     error(
-                        "Wrong APK returned by server. Expected $expectedPackage but downloaded $downloadedPackage."
+                        "Wrong APK blocked. ${app.name} expects $expectedPackage but the server returned $downloadedPackage. Final URL: $finalUrl"
                     )
                 }
 
