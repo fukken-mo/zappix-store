@@ -29,10 +29,12 @@
 
         <View
             android:id="@+id/focusFrame"
-            android:layout_width="186dp"
-            android:layout_height="186dp"
+            android:layout_width="194dp"
+            android:layout_height="194dp"
             android:layout_gravity="center"
             android:background="@drawable/bg_focus_frame"
+            android:elevation="18dp"
+            android:outlineSpotShadowColor="#7DE3FF"
             android:visibility="invisible" />
         <TextView
             android:id="@+id/installedBadge"
