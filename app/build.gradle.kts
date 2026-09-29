@@ -11,13 +11,20 @@ android {
         applicationId = "com.zappix.store"
         minSdk = 23
         targetSdk = 35
-        versionCode = 24
-        versionName = "1.0.15"
+        versionCode = 25
+        versionName = "1.0.16"
 
         val apiBase = providers.gradleProperty("ZAPPIX_API_BASE_URL")
             .orElse("https://panelsandapps.com/panels/Zappix/api/")
             .get()
         buildConfigField("String", "API_BASE_URL", "\"$apiBase\"")
+
+        // Set to false (-PZAPPIX_ALLOW_HTTP_DOWNLOADS=false) once every catalog APK link is https.
+        val allowHttpDownloads = providers.gradleProperty("ZAPPIX_ALLOW_HTTP_DOWNLOADS")
+            .orElse("true")
+            .get()
+            .toBoolean()
+        buildConfigField("boolean", "ALLOW_HTTP_DOWNLOADS", allowHttpDownloads.toString())
     }
 
     signingConfigs {

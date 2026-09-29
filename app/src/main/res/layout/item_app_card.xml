@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="210dp"
-    android:layout_height="228dp"
+    android:layout_height="232dp"
     android:layout_marginEnd="12dp"
     android:clipChildren="false"
     android:clipToPadding="false"
@@ -17,34 +17,35 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
+        <!-- Soft glow drawn outside the artwork; no elevation, so no grey/black shadow halo. -->
+        <View
+            android:id="@+id/focusFrame"
+            android:layout_width="206dp"
+            android:layout_height="206dp"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:background="@drawable/bg_focus_frame"
+            android:visibility="invisible" />
+
         <ImageView
             android:id="@+id/appArtwork"
             android:layout_width="178dp"
             android:layout_height="178dp"
             android:layout_gravity="center"
             android:background="@drawable/bg_app_placeholder"
-            android:clipToOutline="true"
             android:outlineProvider="background"
             android:scaleType="centerCrop" />
 
-        <View
-            android:id="@+id/focusFrame"
-            android:layout_width="194dp"
-            android:layout_height="194dp"
-            android:layout_gravity="center"
-            android:background="@drawable/bg_focus_frame"
-            android:elevation="18dp"
-            android:outlineSpotShadowColor="#7DE3FF"
-            android:visibility="invisible" />
         <TextView
             android:id="@+id/installedBadge"
             android:layout_width="wrap_content"
-            android:layout_height="28dp"
+            android:layout_height="26dp"
             android:layout_gravity="top|end"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
             android:background="@drawable/bg_installed_badge"
             android:gravity="center"
+            android:maxLines="1"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:text="Installed"
@@ -56,8 +57,9 @@
 
     <TextView
         android:id="@+id/appName"
-        android:layout_width="198dp"
+        android:layout_width="match_parent"
         android:layout_height="30dp"
+        android:alpha="0.78"
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"

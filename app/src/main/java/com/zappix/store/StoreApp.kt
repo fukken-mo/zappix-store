@@ -10,7 +10,8 @@ data class StoreApp(
     val versionName: String?,
     val versionCode: Long?,
     val type: AppType,
-    val priceLabel: String?
+    val priceLabel: String?,
+    val sha256: String? = null
 )
 
 enum class AppType { FREE, SUBSCRIPTION, ADULT, TOOLS }
