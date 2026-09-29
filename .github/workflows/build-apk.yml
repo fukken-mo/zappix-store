@@ -25,6 +25,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Read app version
+        run: |
+          VERSION=$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -n1)
+          test -n "$VERSION"
+          echo "ZAPPIX_VERSION=$VERSION" >> "$GITHUB_ENV"
+
       - name: Restore permanent Zappix signing key
         env:
           ZAPPIX_KEYSTORE_BASE64: ${{ secrets.ZAPPIX_KEYSTORE_BASE64 }}
@@ -44,14 +50,14 @@ jobs:
           test -n "$ZAPPIX_KEY_PASSWORD"
           gradle assembleRelease
           test -f app/build/outputs/apk/release/app-release.apk
-          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Zappix-v1.0.15.apk
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Zappix-v${{ env.ZAPPIX_VERSION }}.apk
 
       - name: Verify APK signature
         run: |
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/release/Zappix-v1.0.15.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/release/Zappix-v${{ env.ZAPPIX_VERSION }}.apk
 
       - name: Upload signed Zappix APK
         uses: actions/upload-artifact@v4
         with:
           name: Zappix-APK-SIGNED
-          path: app/build/outputs/apk/release/Zappix-v1.0.15.apk
+          path: app/build/outputs/apk/release/Zappix-v${{ env.ZAPPIX_VERSION }}.apk

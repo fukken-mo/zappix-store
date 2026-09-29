@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!--
+      Cleartext stays allowed only because some catalog download/icon links may still be http://.
+      APK downloads are protected anyway: https->http redirects are blocked, the package name,
+      version, signer and optional sha256 are verified. Once every panel link is https, set this
+      to false and build with -PZAPPIX_ALLOW_HTTP_DOWNLOADS=false.
+    -->
     <base-config cleartextTrafficPermitted="true" />
 </network-security-config>

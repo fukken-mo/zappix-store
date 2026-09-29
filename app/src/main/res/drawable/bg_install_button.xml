@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
- <item android:state_focused="true"><shape><corners android:radius="14dp"/><gradient android:angle="0" android:startColor="#147CC5" android:endColor="#5A4BDD"/><stroke android:width="1dp" android:color="#8CEAFF"/></shape></item>
+ <item android:state_focused="true" android:state_activated="true"><shape><corners android:radius="14dp"/><gradient android:angle="0" android:startColor="#0F6FA8" android:endColor="#3F3AA8"/><stroke android:width="2dp" android:color="#C8F4FF"/></shape></item>
+ <item android:state_focused="true"><shape><corners android:radius="14dp"/><gradient android:angle="0" android:startColor="#18A2E6" android:endColor="#6250F0"/><stroke android:width="2dp" android:color="#D6F7FF"/></shape></item>
+ <item android:state_activated="true"><shape><corners android:radius="14dp"/><gradient android:angle="0" android:startColor="#0B3A5C" android:endColor="#262259"/></shape></item>
  <item><shape><corners android:radius="14dp"/><gradient android:angle="0" android:startColor="#0E4A75" android:endColor="#312B74"/></shape></item>
 </selector>

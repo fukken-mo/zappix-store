@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Soft outer bloom (low alpha, wide) fading into one crisp inner ring around the artwork. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape>
-            <corners android:radius="26dp" />
-            <solid android:color="#1218C8FF" />
-            <stroke android:width="5dp" android:color="#3818C8FF" />
-        </shape>
+        <shape><corners android:radius="33dp" /><stroke android:width="3dp" android:color="#0C18C8FF" /></shape>
     </item>
-    <item android:left="3dp" android:top="3dp" android:right="3dp" android:bottom="3dp">
-        <shape>
-            <corners android:radius="23dp" />
-            <solid android:color="#1018C8FF" />
-            <stroke android:width="3dp" android:color="#6B18C8FF" />
-        </shape>
+    <item android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp">
+        <shape><corners android:radius="31dp" /><stroke android:width="3dp" android:color="#1A18C8FF" /></shape>
     </item>
-    <item android:left="7dp" android:top="7dp" android:right="7dp" android:bottom="7dp">
-        <shape>
-            <corners android:radius="20dp" />
-            <solid android:color="#0618C8FF" />
-            <stroke android:width="2dp" android:color="#E663DFFF" />
-        </shape>
+    <item android:left="4dp" android:top="4dp" android:right="4dp" android:bottom="4dp">
+        <shape><corners android:radius="29dp" /><stroke android:width="3dp" android:color="#2E22CCFF" /></shape>
+    </item>
+    <item android:left="6dp" android:top="6dp" android:right="6dp" android:bottom="6dp">
+        <shape><corners android:radius="27dp" /><stroke android:width="3dp" android:color="#4D38D6FF" /></shape>
+    </item>
+    <item android:left="8dp" android:top="8dp" android:right="8dp" android:bottom="8dp">
+        <shape><corners android:radius="25dp" /><stroke android:width="3dp" android:color="#8050DCFF" /></shape>
+    </item>
+    <item android:left="10.5dp" android:top="10.5dp" android:right="10.5dp" android:bottom="10.5dp">
+        <shape><corners android:radius="23.5dp" /><stroke android:width="3dp" android:color="#F2A8F0FF" /></shape>
     </item>
 </layer-list>
