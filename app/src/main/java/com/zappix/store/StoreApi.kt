@@ -67,7 +67,18 @@ class StoreApi(
                 else -> AppType.FREE
             },
             priceLabel = item.stringOrNull("price_label"),
-            sha256 = item.stringOrNull("sha256")?.lowercase()
+            sha256 = item.stringOrNull("sha256")?.lowercase(),
+            featured = item.optBoolean("featured", false),
+            screenshots = buildList {
+                val shots = item.optJSONArray("screenshots")
+                if (shots != null) {
+                    for (index in 0 until shots.length()) {
+                        val url = shots.optString(index).trim()
+                        if (url.startsWith("https://") || url.startsWith("http://")) add(url)
+                    }
+                }
+            },
+            apkSize = item.longOrNull("apk_size")?.takeIf { it > 0 }
         )
     }
 
