@@ -61,7 +61,7 @@
                 android:id="@+id/refreshButton"
                 android:layout_width="wrap_content"
                 android:layout_height="44dp"
-                android:background="@drawable/bg_action_button"
+                android:background="@drawable/bg_premium_secondary_button"
                 android:focusable="true"
                 android:clickable="true"
                 android:gravity="center"
@@ -83,23 +83,23 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
             <TextView android:id="@+id/freeTab" style="@style/ZappixTab" android:text="Free" />
-            <TextView android:id="@+id/subscriptionTab" style="@style/ZappixTab" android:layout_marginStart="12dp" android:text="Subscription" />
+            <TextView android:id="@+id/subscriptionTab" style="@style/ZappixTab" android:layout_marginStart="16dp" android:text="Subscription" />
             <TextView
                 android:id="@+id/adultTab"
                 style="@style/ZappixTab"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="16dp"
                 android:text="Adult 18+"
                 android:visibility="gone" />
             <TextView
                 android:id="@+id/toolsTab"
                 style="@style/ZappixTab"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="16dp"
                 android:text="Tools"
                 android:visibility="gone" />
             <TextView
                 android:id="@+id/updatesTab"
                 style="@style/ZappixTab"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="16dp"
                 android:text="Updates"
                 android:visibility="gone" />
         </LinearLayout>
@@ -173,7 +173,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="42dp"
                     android:layout_marginStart="18dp"
-                    android:background="@drawable/bg_action_button"
+                    android:background="@drawable/bg_premium_secondary_button"
                     android:gravity="center"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
@@ -400,7 +400,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="26dp"
+                    android:layout_marginTop="30dp"
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:orientation="horizontal">
@@ -408,8 +408,8 @@
                     <Button
                         android:id="@+id/installFullButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="56dp"
-                        android:minWidth="160dp"
+                        android:layout_height="60dp"
+                        android:minWidth="172dp"
                         android:maxLines="1"
                         android:paddingStart="24dp"
                         android:paddingEnd="24dp"
@@ -417,7 +417,7 @@
                         android:nextFocusRight="@id/backFullButton"
                         android:nextFocusUp="@id/installFullButton"
                         android:nextFocusDown="@id/installFullButton"
-                        android:background="@drawable/bg_install_button"
+                        android:background="@drawable/bg_premium_primary_button"
                         android:focusable="true"
                         android:stateListAnimator="@null"
                         android:text="Install"
@@ -430,12 +430,12 @@
                         android:id="@+id/uninstallFullButton"
                         android:layout_width="wrap_content"
                         android:layout_height="56dp"
-                        android:layout_marginStart="12dp"
-                        android:minWidth="130dp"
+                        android:layout_marginStart="16dp"
+                        android:minWidth="142dp"
                         android:maxLines="1"
                         android:paddingStart="22dp"
                         android:paddingEnd="22dp"
-                        android:background="@drawable/bg_action_button"
+                        android:background="@drawable/bg_premium_secondary_button"
                         android:focusable="true"
                         android:nextFocusLeft="@id/installFullButton"
                         android:nextFocusRight="@id/backFullButton"
@@ -453,8 +453,8 @@
                         android:id="@+id/backFullButton"
                         android:layout_width="wrap_content"
                         android:layout_height="56dp"
-                        android:layout_marginStart="12dp"
-                        android:minWidth="110dp"
+                        android:layout_marginStart="16dp"
+                        android:minWidth="122dp"
                         android:maxLines="1"
                         android:paddingStart="22dp"
                         android:paddingEnd="22dp"
@@ -462,7 +462,7 @@
                         android:nextFocusRight="@id/backFullButton"
                         android:nextFocusUp="@id/backFullButton"
                         android:nextFocusDown="@id/backFullButton"
-                        android:background="@drawable/bg_action_button"
+                        android:background="@drawable/bg_premium_secondary_button"
                         android:focusable="true"
                         android:stateListAnimator="@null"
                         android:text="Back"
