@@ -53,7 +53,7 @@ class StoreViewModel(
         }
     }
 
-    private fun checkForUpdate() {
+    fun checkForUpdate() {
         viewModelScope.launch {
             try {
                 _update.value = updateChecker.check()
