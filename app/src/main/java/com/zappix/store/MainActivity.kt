@@ -205,7 +205,7 @@ class MainActivity : ComponentActivity() {
         }
         refreshButton.nextFocusUpId = R.id.refreshButton
         refreshButton.nextFocusRightId = R.id.refreshButton
-        addFocusScale(refreshButton, 1.02f)
+        addFocusScale(refreshButton, 1.0f)
 
         featuredCard.setOnClickListener {
             featuredApp?.let { app ->
@@ -225,12 +225,12 @@ class MainActivity : ComponentActivity() {
                 else -> false
             }
         }
-        addFocusScale(featuredCard, 1.02f)
+        addFocusScale(featuredCard, 1.0f)
 
         installFullButton.setOnClickListener { onPrimaryDetailAction() }
         uninstallFullButton.setOnClickListener { detailApp?.let { uninstallInstalledApp(it) } }
         backFullButton.setOnClickListener { closeFullDetails() }
-        listOf(installFullButton, uninstallFullButton, backFullButton).forEach { addFocusScale(it, 1.01f) }
+        listOf(installFullButton, uninstallFullButton, backFullButton).forEach { addFocusScale(it, 1.0f) }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -431,10 +431,8 @@ class MainActivity : ComponentActivity() {
                     false
                 }
             }
-            tab.setOnFocusChangeListener { view, focused ->
-                view.animate().cancel()
-                view.animate().scaleX(if (focused) 1.06f else 1f).scaleY(if (focused) 1.06f else 1f)
-                    .setDuration(120L).start()
+            tab.setOnFocusChangeListener { _, _ ->
+                // Focus is drawn entirely inside the pill background so it can never be clipped.
                 updateTabs()
             }
         }
@@ -486,7 +484,7 @@ class MainActivity : ComponentActivity() {
         setTabVisible(toolsTab, allApps.any { it.type == AppType.TOOLS })
         val updateCount = allApps.count { installState(it) == InstallState.UPDATE }
         setTabVisible(updatesTab, updateCount > 0)
-        updatesTab.text = if (updateCount > 0) "Updates ($updateCount)" else "Updates"
+        updatesTab.text = if (updateCount > 0) "↑  Updates  $updateCount" else "↑  Updates"
 
         // First/last visible tab: LEFT/RIGHT stay on the tab row instead of jumping to Refresh.
         val visible = tabs.map { it.first }.filter { it.visibility == View.VISIBLE }
