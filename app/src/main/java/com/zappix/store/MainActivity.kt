@@ -199,7 +199,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setupTabs()
-        refreshButton.setOnClickListener { vm.refresh() }
+        refreshButton.setOnClickListener {
+            vm.refresh()
+            vm.checkForUpdate()
+        }
         refreshButton.nextFocusUpId = R.id.refreshButton
         refreshButton.nextFocusRightId = R.id.refreshButton
         addFocusScale(refreshButton, 1.06f)
@@ -261,6 +264,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         backCallback.isEnabled = true
         refreshInstallStates()
+        vm.checkForUpdate()
 
         pendingInstall?.let { prepared ->
             pendingInstall = null
