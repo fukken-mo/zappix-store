@@ -46,6 +46,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var emptyText: TextView
     private lateinit var sectionTitle: TextView
     private lateinit var refreshButton: TextView
+    private lateinit var featuredCard: View
+    private lateinit var featuredArtwork: ImageView
+    private lateinit var featuredName: TextView
+    private lateinit var featuredDescription: TextView
     private lateinit var freeTab: TextView
     private lateinit var subscriptionTab: TextView
     private lateinit var adultTab: TextView
@@ -57,6 +61,11 @@ class MainActivity : ComponentActivity() {
     private lateinit var detailNameFull: TextView
     private lateinit var detailTypeFull: TextView
     private lateinit var detailDescriptionFull: TextView
+    private lateinit var detailMetaFull: TextView
+    private lateinit var detailScreenshotsRow: View
+    private lateinit var detailScreenshot1: ImageView
+    private lateinit var detailScreenshot2: ImageView
+    private lateinit var detailScreenshot3: ImageView
     private lateinit var detailErrorFull: TextView
     private lateinit var installFullButton: Button
     private lateinit var uninstallFullButton: Button
@@ -75,6 +84,7 @@ class MainActivity : ComponentActivity() {
 
     // Catalog / install state
     private var allApps: List<StoreApp> = emptyList()
+    private var featuredApp: StoreApp? = null
     private var installedVersions: Map<String, Long> = emptyMap()
     private var installStatesJob: Job? = null
 
@@ -86,6 +96,7 @@ class MainActivity : ComponentActivity() {
 
     /** The app shown in Details. The Details buttons act on this app and nothing else. */
     private var detailApp: StoreApp? = null
+    private var detailOpenedFromFeatured = false
 
     // Download / install state
     private class ActiveDownload(val appId: Int, val name: String, val job: Job)
@@ -136,6 +147,10 @@ class MainActivity : ComponentActivity() {
         emptyText = findViewById(R.id.emptyText)
         sectionTitle = findViewById(R.id.sectionTitle)
         refreshButton = findViewById(R.id.refreshButton)
+        featuredCard = findViewById(R.id.featuredCard)
+        featuredArtwork = findViewById(R.id.featuredArtwork)
+        featuredName = findViewById(R.id.featuredName)
+        featuredDescription = findViewById(R.id.featuredDescription)
         freeTab = findViewById(R.id.freeTab)
         subscriptionTab = findViewById(R.id.subscriptionTab)
         adultTab = findViewById(R.id.adultTab)
@@ -147,6 +162,11 @@ class MainActivity : ComponentActivity() {
         detailNameFull = findViewById(R.id.detailNameFull)
         detailTypeFull = findViewById(R.id.detailTypeFull)
         detailDescriptionFull = findViewById(R.id.detailDescriptionFull)
+        detailMetaFull = findViewById(R.id.detailMetaFull)
+        detailScreenshotsRow = findViewById(R.id.detailScreenshotsRow)
+        detailScreenshot1 = findViewById(R.id.detailScreenshot1)
+        detailScreenshot2 = findViewById(R.id.detailScreenshot2)
+        detailScreenshot3 = findViewById(R.id.detailScreenshot3)
         detailErrorFull = findViewById(R.id.detailErrorFull)
         installFullButton = findViewById(R.id.installFullButton)
         uninstallFullButton = findViewById(R.id.uninstallFullButton)
@@ -157,8 +177,11 @@ class MainActivity : ComponentActivity() {
 
         adapter = AppAdapter(
             onFocused = { _, position -> lastFocusedIndex = position },
-            onClicked = { app -> openFullDetails(app) },
-            onUpPressed = { tabFor(currentSection).requestFocus() }
+            onClicked = { app ->
+                detailOpenedFromFeatured = false
+                openFullDetails(app)
+            },
+            onUpPressed = { focusAboveRow() }
         )
         rowLayoutManager = TvRowLayoutManager(this) { target -> focusCard(target) }
 
@@ -180,6 +203,26 @@ class MainActivity : ComponentActivity() {
         refreshButton.nextFocusUpId = R.id.refreshButton
         refreshButton.nextFocusRightId = R.id.refreshButton
         addFocusScale(refreshButton, 1.06f)
+
+        featuredCard.setOnClickListener {
+            featuredApp?.let { app ->
+                detailOpenedFromFeatured = true
+                openFullDetails(app)
+            }
+        }
+        featuredCard.setOnKeyListener { _, keyCode, event ->
+            if (event.action != KeyEvent.ACTION_DOWN) return@setOnKeyListener false
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_UP -> {
+                    freeTab.requestFocus()
+                    true
+                }
+                KeyEvent.KEYCODE_DPAD_DOWN -> focusRow()
+                KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> true
+                else -> false
+            }
+        }
+        addFocusScale(featuredCard, 1.02f)
 
         installFullButton.setOnClickListener { onPrimaryDetailAction() }
         uninstallFullButton.setOnClickListener { detailApp?.let { uninstallInstalledApp(it) } }
@@ -251,6 +294,8 @@ class MainActivity : ComponentActivity() {
         errorText.visibility = if (state.error != null) View.VISIBLE else View.GONE
         if (state.apps !== allApps) {
             allApps = state.apps
+            featuredApp = allApps.firstOrNull { it.featured }
+            renderFeatured()
             refreshInstallStates()
         }
         updateLoadingAndEmpty()
@@ -324,6 +369,7 @@ class MainActivity : ComponentActivity() {
         if (changed && appsRecycler.hasFocus()) tabFor(section).requestFocus()
         currentSection = section
         displayedSection = section
+        updateFeaturedVisibility()
         if (changed) lastFocusedIndex = 0
         sectionTitle.text = when (section) {
             StoreSection.FREE -> "Free Apps"
@@ -371,7 +417,12 @@ class MainActivity : ComponentActivity() {
             tab.nextFocusUpId = R.id.refreshButton
             tab.setOnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.action == KeyEvent.ACTION_DOWN) {
-                    focusRow()
+                    if (section == StoreSection.FREE && featuredCard.visibility == View.VISIBLE) {
+                        featuredCard.requestFocus()
+                        true
+                    } else {
+                        focusRow()
+                    }
                 } else {
                     false
                 }
@@ -473,6 +524,8 @@ class MainActivity : ComponentActivity() {
             AppType.ADULT -> app.priceLabel ?: "18+"
             AppType.TOOLS -> "TOOLS"
         }
+        detailMetaFull.text = buildAppMeta(app)
+        renderScreenshots(app)
         detailErrorFull.visibility = View.GONE
         renderDetailButtons()
         // Show the overlay and move focus into it before hiding the row, so focus is never lost.
@@ -485,8 +538,16 @@ class MainActivity : ComponentActivity() {
     private fun closeFullDetails() {
         if (!detailsOpen) return
         val returnId = detailApp?.id
+        val returnToFeatured = detailOpenedFromFeatured
+        detailOpenedFromFeatured = false
         detailApp = null
         mainContent.visibility = View.VISIBLE
+        if (returnToFeatured && featuredCard.visibility == View.VISIBLE) {
+            featuredCard.requestFocus()
+            detailsOverlay.visibility = View.GONE
+            maybeShowUpdateDialog()
+            return
+        }
         val items = adapter.currentList
         val index = items.indexOfFirst { it.app.id == returnId }.takeIf { it >= 0 }
             ?: lastFocusedIndex.coerceAtMost(items.size - 1)
@@ -801,6 +862,72 @@ class MainActivity : ComponentActivity() {
         val dialog = builder.create()
         updateDialog = dialog
         showSafely(dialog)
+    }
+
+    private fun renderFeatured() {
+        val app = featuredApp
+        if (app == null) {
+            featuredCard.visibility = View.GONE
+            return
+        }
+        featuredName.text = app.name
+        featuredDescription.text = app.description.ifBlank { "Featured on Zappix" }
+        featuredArtwork.load(app.iconUrl.ifBlank { null }) {
+            crossfade(false)
+            allowHardware(true)
+            size(220, 220)
+        }
+        updateFeaturedVisibility()
+    }
+
+    private fun updateFeaturedVisibility() {
+        val visible = currentSection == StoreSection.FREE && featuredApp != null
+        if (!visible && featuredCard.hasFocus()) freeTab.requestFocus()
+        featuredCard.visibility = if (visible) View.VISIBLE else View.GONE
+        if (visible) {
+            featuredCard.nextFocusUpId = R.id.freeTab
+            featuredCard.nextFocusDownId = R.id.appsRecycler
+        }
+    }
+
+    private fun focusAboveRow(): Boolean {
+        return if (currentSection == StoreSection.FREE && featuredCard.visibility == View.VISIBLE) {
+            featuredCard.requestFocus()
+        } else {
+            tabFor(currentSection).requestFocus()
+        }
+    }
+
+    private fun buildAppMeta(app: StoreApp): String {
+        val parts = mutableListOf<String>()
+        app.versionName?.takeIf { it.isNotBlank() }?.let { parts += "Version $it" }
+        app.apkSize?.takeIf { it > 0 }?.let { parts += formatBytes(it) }
+        return parts.joinToString("  •  ")
+    }
+
+    private fun formatBytes(bytes: Long): String {
+        val mb = bytes.toDouble() / (1024.0 * 1024.0)
+        return if (mb >= 10) "${mb.toInt()} MB" else String.format(java.util.Locale.US, "%.1f MB", mb)
+    }
+
+    private fun renderScreenshots(app: StoreApp) {
+        val views = listOf(detailScreenshot1, detailScreenshot2, detailScreenshot3)
+        views.forEachIndexed { index, view ->
+            val url = app.screenshots.getOrNull(index)
+            if (url.isNullOrBlank()) {
+                view.visibility = View.GONE
+                view.setImageDrawable(null)
+            } else {
+                view.visibility = View.VISIBLE
+                view.load(url) {
+                    crossfade(false)
+                    allowHardware(true)
+                    size(360, 210)
+                }
+            }
+        }
+        detailScreenshotsRow.visibility =
+            if (app.screenshots.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
     // ---------------------------------------------------------------------------------------
