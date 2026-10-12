@@ -205,7 +205,7 @@ class MainActivity : ComponentActivity() {
         }
         refreshButton.nextFocusUpId = R.id.refreshButton
         refreshButton.nextFocusRightId = R.id.refreshButton
-        addFocusScale(refreshButton, 1.06f)
+        addFocusScale(refreshButton, 1.02f)
 
         featuredCard.setOnClickListener {
             featuredApp?.let { app ->
@@ -230,7 +230,7 @@ class MainActivity : ComponentActivity() {
         installFullButton.setOnClickListener { onPrimaryDetailAction() }
         uninstallFullButton.setOnClickListener { detailApp?.let { uninstallInstalledApp(it) } }
         backFullButton.setOnClickListener { closeFullDetails() }
-        listOf(installFullButton, uninstallFullButton, backFullButton).forEach { addFocusScale(it, 1.05f) }
+        listOf(installFullButton, uninstallFullButton, backFullButton).forEach { addFocusScale(it, 1.01f) }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
