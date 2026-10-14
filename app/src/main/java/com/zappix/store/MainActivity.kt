@@ -728,8 +728,20 @@ class MainActivity : ComponentActivity() {
         }
         detailErrorFull.visibility = View.GONE
         val uri = Uri.parse("package:$pkg")
+
+        // Prefer the explicit uninstall action. Some Android TV firmware does not
+        // expose ACTION_DELETE correctly even though its package uninstaller exists.
+        val uninstallIntent = Intent(Intent.ACTION_UNINSTALL_PACKAGE, uri).apply {
+            putExtra(Intent.EXTRA_RETURN_RESULT, false)
+        }
+        if (tryStart(uninstallIntent)) return
+
+        // Older / vendor TV builds may only respond to ACTION_DELETE.
         if (tryStart(Intent(Intent.ACTION_DELETE, uri))) return
+
+        // Last-resort fallback lets the user uninstall from the system app page.
         if (tryStart(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri))) return
+
         showDetailError("This TV does not provide an uninstall screen.")
     }
 
