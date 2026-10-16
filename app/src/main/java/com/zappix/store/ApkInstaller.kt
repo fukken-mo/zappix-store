@@ -13,7 +13,6 @@ import android.os.Build
 import android.os.StatFs
 import android.provider.Settings
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
@@ -213,17 +212,19 @@ class ApkInstaller(context: Context) {
     ): PreparedApk {
         request.sha256?.let { expected ->
             if (!expected.equals(digestHex, ignoreCase = true)) {
-                Log.w(TAG, "Checksum mismatch for ${request.displayName}: expected $expected got $digestHex from $finalUrl")
+                Log.w(TAG, "Checksum mismatch for ${request.displayName}: expected $expected got $digestHex")
                 throw UserFacingException("Download blocked: the file failed its security check. Please try again later.")
             }
         }
 
-        val signingFlag = if (Build.VERSION.SDK_INT >= 28) PackageManager.GET_SIGNING_CERTIFICATES else 0
+        val signingFlag =
+            if (Build.VERSION.SDK_INT >= 28) PackageManager.GET_SIGNING_CERTIFICATES
+            else PackageManager.GET_SIGNATURES
         val archive = archiveInfo(file, signingFlag)
             ?: throw UserFacingException("The downloaded file is not a valid Android app. The download link may be broken.")
 
         if (archive.packageName != expectedPackage) {
-            Log.w(TAG, "Wrong APK for ${request.displayName}: expected $expectedPackage got ${archive.packageName} from $finalUrl")
+            Log.w(TAG, "Wrong APK for ${request.displayName}: expected $expectedPackage got ${archive.packageName}")
             throw ApkRejectedException(
                 "Wrong app blocked: ${request.displayName} should be $expectedPackage but the server sent ${archive.packageName}. Please report this to support."
             )
@@ -232,7 +233,7 @@ class ApkInstaller(context: Context) {
         val archiveCode = archive.versionCodeCompat
         request.minVersionCode?.let { required ->
             if (archiveCode < required) {
-                Log.w(TAG, "Stale APK for ${request.displayName}: got $archiveCode, need $required, from $finalUrl")
+                Log.w(TAG, "Stale APK for ${request.displayName}: got $archiveCode, need $required")
                 throw ApkRejectedException(
                     "The server's file for ${request.displayName} is older than the version listed in Zappix. Please try again later."
                 )
@@ -246,9 +247,15 @@ class ApkInstaller(context: Context) {
             if (archiveCode < installed.versionCodeCompat) {
                 throw ApkRejectedException("A newer version of ${request.displayName} is already installed on this TV.")
             }
-            if (Build.VERSION.SDK_INT >= 28 && !signersCompatible(installed, archive)) {
+            if (!signersCompatible(installed, archive)) {
+                val guidance =
+                    if (expectedPackage == appContext.packageName) {
+                        "Please contact support before updating Zappix."
+                    } else {
+                        "Uninstall it first, then install it from Zappix."
+                    }
                 throw ApkRejectedException(
-                    "${request.displayName} on this TV was installed from a different source. Uninstall it first, then install it from Zappix."
+                    "${request.displayName} on this TV was installed from a different source. $guidance"
                 )
             }
         }
@@ -264,21 +271,36 @@ class ApkInstaller(context: Context) {
         }
     }
 
-    @RequiresApi(28)
+    @Suppress("DEPRECATION")
     private fun signersCompatible(installed: PackageInfo, archive: PackageInfo): Boolean {
-        val installedInfo = installed.signingInfo ?: return true
-        val archiveInfo = archive.signingInfo ?: return true
-        val installedCurrent = installedInfo.apkContentsSigners.orEmpty().map { it.toCharsString() }.toSet()
-        if (installedCurrent.isEmpty()) return true
-        return if (archiveInfo.hasMultipleSigners()) {
-            archiveInfo.apkContentsSigners.orEmpty().map { it.toCharsString() }.toSet() == installedCurrent
-        } else {
-            val lineage = (archiveInfo.signingCertificateHistory.orEmpty().toList() +
-                archiveInfo.apkContentsSigners.orEmpty().toList())
+        if (Build.VERSION.SDK_INT >= 28) {
+            val installedInfo = installed.signingInfo ?: return false
+            val archiveInfo = archive.signingInfo ?: return false
+            val installedCurrent = installedInfo.apkContentsSigners.orEmpty()
                 .map { it.toCharsString() }
                 .toSet()
-            installedCurrent.size == 1 && installedCurrent.first() in lineage
+            if (installedCurrent.isEmpty()) return false
+            return if (archiveInfo.hasMultipleSigners()) {
+                val archiveCurrent = archiveInfo.apkContentsSigners.orEmpty()
+                    .map { it.toCharsString() }
+                    .toSet()
+                archiveCurrent.isNotEmpty() && archiveCurrent == installedCurrent
+            } else {
+                val lineage = (archiveInfo.signingCertificateHistory.orEmpty().toList() +
+                    archiveInfo.apkContentsSigners.orEmpty().toList())
+                    .map { it.toCharsString() }
+                    .toSet()
+                lineage.isNotEmpty() &&
+                    installedCurrent.size == 1 &&
+                    installedCurrent.first() in lineage
+            }
         }
+
+        val installedLegacy = installed.signatures.orEmpty().map { it.toCharsString() }.toSet()
+        val archiveLegacy = archive.signatures.orEmpty().map { it.toCharsString() }.toSet()
+        return installedLegacy.isNotEmpty() &&
+            archiveLegacy.isNotEmpty() &&
+            installedLegacy == archiveLegacy
     }
 
     @Suppress("DEPRECATION")
@@ -306,18 +328,15 @@ class ApkInstaller(context: Context) {
             setDataAndType(uri, APK_MIME)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        // Only let the system installer receive the APK, never a third-party "APK handler".
-        systemInstallerPackage(intent)?.let { intent.setPackage(it) }
+        // Only let a system package installer receive the APK. Never fall back to
+        // an arbitrary third-party handler for verified installation files.
+        val installerPackage = systemInstallerPackage(intent) ?: return false
+        intent.setPackage(installerPackage)
         return try {
             activity.startActivity(intent)
             true
         } catch (_: ActivityNotFoundException) {
-            try {
-                activity.startActivity(intent.setPackage(null))
-                true
-            } catch (_: Exception) {
-                false
-            }
+            false
         } catch (_: SecurityException) {
             false
         }
