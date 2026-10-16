@@ -174,6 +174,10 @@ class MainActivity : ComponentActivity() {
         onBackPressedDispatcher.addCallback(this, backCallback)
 
         detailArtworkFull.clipToOutline = true
+        featuredArtwork.clipToOutline = true
+        detailScreenshot1.clipToOutline = true
+        detailScreenshot2.clipToOutline = true
+        detailScreenshot3.clipToOutline = true
 
         adapter = AppAdapter(
             onFocused = { _, position -> lastFocusedIndex = position },
@@ -406,8 +410,14 @@ class MainActivity : ComponentActivity() {
         if (index !in 0 until adapter.itemCount) return false
         rowLayoutManager.findViewByPosition(index)?.let { if (it.requestFocus()) return true }
         holdFocusOn?.requestFocus()
+        val sectionAtRequest = currentSection
         appsRecycler.scrollToPosition(index)
-        appsRecycler.post { rowLayoutManager.findViewByPosition(index)?.requestFocus() }
+        appsRecycler.post {
+            if (detailsOpen || currentSection != sectionAtRequest || index !in 0 until adapter.itemCount) {
+                return@post
+            }
+            rowLayoutManager.findViewByPosition(index)?.requestFocus()
+        }
         return true
     }
 
