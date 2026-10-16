@@ -46,7 +46,5 @@
     <color name="zx_badge_update_text">#EFEAFF</color>
 
     <!-- Launcher (kept for the adaptive icon) -->
-    <color name="zappix_background">#050812</color>
-    <color name="zappix_blue">#16C7FF</color>
     <color name="zappix_launcher_bg">#050812</color>
 </resources>

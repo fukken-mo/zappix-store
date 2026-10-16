@@ -307,7 +307,7 @@ class MainActivity : ComponentActivity() {
 
     private fun render(state: StoreUiState) {
         refreshButton.isActivated = state.loading
-        refreshButton.text = if (state.loading) "Refreshing…" else "Refresh"
+        refreshButton.setText(if (state.loading) R.string.zx_refreshing else R.string.zx_refresh)
         errorText.text = state.error.orEmpty()
         errorText.visibility = if (state.error != null) View.VISIBLE else View.GONE
         if (state.apps !== allApps) {
@@ -503,7 +503,11 @@ class MainActivity : ComponentActivity() {
         setTabVisible(toolsTab, allApps.any { it.type == AppType.TOOLS })
         val updateCount = allApps.count { installState(it) == InstallState.UPDATE }
         setTabVisible(updatesTab, updateCount > 0)
-        updatesTab.text = if (updateCount > 0) "Updates · $updateCount" else "Updates"
+        updatesTab.text = if (updateCount > 0) {
+            getString(R.string.zx_nav_updates_count, updateCount)
+        } else {
+            getString(R.string.zx_nav_updates)
+        }
 
         // First/last visible tab: LEFT/RIGHT stay on the tab row instead of jumping to Refresh.
         val visible = tabs.map { it.first }.filter { it.visibility == View.VISIBLE }
@@ -629,10 +633,12 @@ class MainActivity : ComponentActivity() {
         if (total > 0) {
             detailProgress.isIndeterminate = false
             detailProgress.progress = (done * 100 / total).toInt().coerceIn(0, 100)
-            detailProgressLabel.text = "Downloading · ${formatProgress(done, total)} · ${formatBytes(done)} of ${formatBytes(total)}"
+            detailProgressLabel.text =
+                getString(R.string.zx_download_progress, formatProgress(done, total), formatBytes(done), formatBytes(total))
         } else {
             detailProgress.isIndeterminate = true
-            detailProgressLabel.text = if (done > 0) "Downloading · ${formatBytes(done)}" else "Starting download…"
+            detailProgressLabel.text =
+                if (done > 0) getString(R.string.zx_download_bytes, formatBytes(done)) else getString(R.string.zx_download_starting)
         }
     }
 

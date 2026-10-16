@@ -6,6 +6,7 @@
   leaving the bottom 36dp (>= 27dp overscan) empty.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -38,7 +39,7 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:contentDescription="Zappix"
+                    android:contentDescription="@string/zx_brand"
                     android:scaleType="centerInside"
                     android:src="@drawable/zappix_icon" />
             </FrameLayout>
@@ -54,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
                     android:maxLines="1"
-                    android:text="Zappix"
+                    android:text="@string/zx_brand"
                     android:textColor="@color/zx_text_primary"
                     android:textSize="@dimen/zx_text_brand"
                     android:textStyle="bold" />
@@ -64,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Your apps. One place." />
+                    android:text="@string/zx_tagline" />
             </LinearLayout>
 
             <Space
@@ -87,7 +88,7 @@
                 android:minWidth="140dp"
                 android:paddingStart="14dp"
                 android:paddingEnd="18dp"
-                android:text="Refresh"
+                android:text="@string/zx_refresh"
                 android:textColor="@color/zx_btn_secondary_content"
                 android:textSize="@dimen/zx_text_control"
                 android:textStyle="bold" />
@@ -106,117 +107,113 @@
                 android:id="@+id/freeTab"
                 style="@style/ZappixNavPill"
                 android:drawableStart="@drawable/ic_nav_free"
-                android:text="Free" />
+                android:text="@string/zx_nav_free" />
 
             <TextView
                 android:id="@+id/subscriptionTab"
                 style="@style/ZappixNavPill"
                 android:drawableStart="@drawable/ic_nav_subscription"
-                android:text="Subscription" />
+                android:text="@string/zx_nav_subscription" />
 
             <TextView
                 android:id="@+id/adultTab"
                 style="@style/ZappixNavPill"
                 android:drawableStart="@drawable/ic_nav_adult"
-                android:text="Adult 18+"
+                android:text="@string/zx_nav_adult"
                 android:visibility="gone" />
 
             <TextView
                 android:id="@+id/toolsTab"
                 style="@style/ZappixNavPill"
                 android:drawableStart="@drawable/ic_nav_tools"
-                android:text="Tools"
+                android:text="@string/zx_nav_tools"
                 android:visibility="gone" />
 
             <TextView
                 android:id="@+id/updatesTab"
                 style="@style/ZappixNavPill"
                 android:drawableStart="@drawable/ic_nav_updates"
-                android:text="Updates"
+                android:text="@string/zx_nav_updates"
                 android:visibility="gone" />
         </LinearLayout>
 
         <!-- Featured strip (Free section only) -->
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/featuredCard"
             android:layout_width="match_parent"
             android:layout_height="@dimen/zx_featured_height"
             android:layout_marginTop="@dimen/zx_section_gap"
             android:background="@drawable/bg_featured_card"
             android:clickable="true"
+            android:baselineAligned="false"
             android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:nextFocusLeft="@id/featuredCard"
             android:nextFocusRight="@id/featuredCard"
             android:paddingStart="12dp"
             android:paddingEnd="16dp"
             android:visibility="gone">
 
+            <ImageView
+                android:id="@+id/featuredArtwork"
+                android:layout_width="@dimen/zx_featured_art"
+                android:layout_height="@dimen/zx_featured_art"
+                android:background="@drawable/bg_app_placeholder"
+                android:contentDescription="@string/zx_featured_app"
+                android:outlineProvider="background"
+                android:scaleType="centerCrop" />
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/featuredArtwork"
-                    android:layout_width="@dimen/zx_featured_art"
-                    android:layout_height="@dimen/zx_featured_art"
-                    android:background="@drawable/bg_app_placeholder"
-                    android:contentDescription="Featured app"
-                    android:outlineProvider="background"
-                    android:scaleType="centerCrop" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/ZappixText.Overline"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_featured"
-                        android:drawablePadding="6dp"
-                        android:drawableTint="@color/zx_cyan_soft"
-                        android:gravity="center_vertical"
-                        android:text="FEATURED" />
-
-                    <TextView
-                        android:id="@+id/featuredName"
-                        style="@style/ZappixText.Title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp" />
-
-                    <TextView
-                        android:id="@+id/featuredDescription"
-                        style="@style/ZappixText.Caption"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="1dp"
-                        android:textColor="@color/zx_text_secondary" />
-                </LinearLayout>
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
+                    style="@style/ZappixText.Overline"
                     android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="16dp"
-                    android:background="@drawable/bg_chip"
-                    android:drawableEnd="@drawable/ic_action_open"
-                    android:drawablePadding="4dp"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_featured"
+                    android:drawablePadding="6dp"
                     android:drawableTint="@color/zx_cyan_soft"
                     android:gravity="center_vertical"
-                    android:maxLines="1"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="8dp"
-                    android:text="View"
-                    android:textColor="@color/zx_text_primary"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
+                    android:text="@string/zx_featured" />
+
+                <TextView
+                    android:id="@+id/featuredName"
+                    style="@style/ZappixText.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp" />
+
+                <TextView
+                    android:id="@+id/featuredDescription"
+                    style="@style/ZappixText.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:textColor="@color/zx_text_secondary" />
             </LinearLayout>
-        </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginStart="16dp"
+                android:background="@drawable/bg_chip"
+                android:drawableEnd="@drawable/ic_action_open"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/zx_cyan_soft"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingStart="14dp"
+                android:paddingEnd="8dp"
+                android:text="@string/zx_view"
+                android:textColor="@color/zx_text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <!-- Section title + inline status (error never pushes the row down) -->
         <LinearLayout
@@ -231,7 +228,7 @@
                 style="@style/ZappixText.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Free Apps" />
+                android:text="@string/zx_section_free" />
 
             <TextView
                 android:id="@+id/errorText"
@@ -284,7 +281,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="No apps in this section yet."
+                android:text="@string/zx_empty_section"
                 android:textColor="@color/zx_text_muted"
                 android:visibility="gone" />
         </FrameLayout>
@@ -302,11 +299,13 @@
         android:clickable="true"
         android:descendantFocusability="afterDescendants"
         android:focusable="false"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:ignore="KeyboardInaccessibleWidget">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:baselineAligned="false"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="@dimen/zx_details_safe_h"
@@ -326,7 +325,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_app_placeholder"
-                    android:contentDescription="App artwork"
+                    android:contentDescription="@string/zx_app_artwork"
                     android:outlineProvider="background"
                     android:scaleType="centerCrop" />
             </FrameLayout>
@@ -343,7 +342,7 @@
                     style="@style/ZappixText.Overline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="APP DETAILS" />
+                    android:text="@string/zx_app_details" />
 
                 <TextView
                     android:id="@+id/detailNameFull"
@@ -409,7 +408,7 @@
                         android:layout_width="@dimen/zx_shot_width"
                         android:layout_height="@dimen/zx_shot_height"
                         android:background="@drawable/bg_screenshot"
-                        android:contentDescription="Screenshot"
+                        android:contentDescription="@string/zx_screenshot"
                         android:outlineProvider="background"
                         android:scaleType="centerCrop" />
 
@@ -419,7 +418,7 @@
                         android:layout_height="@dimen/zx_shot_height"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/bg_screenshot"
-                        android:contentDescription="Screenshot"
+                        android:contentDescription="@string/zx_screenshot"
                         android:outlineProvider="background"
                         android:scaleType="centerCrop" />
 
@@ -429,7 +428,7 @@
                         android:layout_height="@dimen/zx_shot_height"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/bg_screenshot"
-                        android:contentDescription="Screenshot"
+                        android:contentDescription="@string/zx_screenshot"
                         android:outlineProvider="background"
                         android:scaleType="centerCrop" />
                 </LinearLayout>
@@ -481,7 +480,7 @@
                         android:nextFocusLeft="@id/installFullButton"
                         android:nextFocusRight="@id/backFullButton"
                         android:nextFocusUp="@id/installFullButton"
-                        android:text="Install" />
+                        android:text="@string/zx_install" />
 
                     <Button
                         android:id="@+id/uninstallFullButton"
@@ -492,7 +491,7 @@
                         android:nextFocusLeft="@id/installFullButton"
                         android:nextFocusRight="@id/backFullButton"
                         android:nextFocusUp="@id/uninstallFullButton"
-                        android:text="Uninstall"
+                        android:text="@string/zx_uninstall"
                         android:visibility="gone" />
 
                     <Button
@@ -504,7 +503,7 @@
                         android:nextFocusLeft="@id/installFullButton"
                         android:nextFocusRight="@id/backFullButton"
                         android:nextFocusUp="@id/backFullButton"
-                        android:text="Back" />
+                        android:text="@string/zx_back" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

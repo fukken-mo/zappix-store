@@ -72,13 +72,13 @@ class AppAdapter(
             name.text = item.app.name
             when (item.state) {
                 InstallState.INSTALLED -> {
-                    badge.text = "Installed"
+                    badge.setText(R.string.zx_badge_installed)
                     badge.setBackgroundResource(R.drawable.bg_installed_badge)
                     badge.setTextColor(ContextCompat.getColor(itemView.context, R.color.zx_badge_installed_text))
                     badge.visibility = View.VISIBLE
                 }
                 InstallState.UPDATE -> {
-                    badge.text = "Update"
+                    badge.setText(R.string.zx_badge_update)
                     badge.setBackgroundResource(R.drawable.bg_update_badge)
                     badge.setTextColor(ContextCompat.getColor(itemView.context, R.color.zx_badge_update_text))
                     badge.visibility = View.VISIBLE
