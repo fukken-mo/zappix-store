@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Zappix design system: one cyan / blue / purple brand ramp on deep navy surfaces. -->
 <resources>
-    <color name="zappix_background">#050812</color>
-    <color name="zappix_blue">#16C7FF</color>
+    <!-- Background -->
+    <color name="zx_bg_top">#071326</color>
+    <color name="zx_bg_mid">#050914</color>
+    <color name="zx_bg_bottom">#02040A</color>
+    <color name="zx_scrim">#F703060C</color>
+
+    <!-- Surfaces -->
+    <color name="zx_surface">#0D1624</color>
+    <color name="zx_surface_raised">#122033</color>
+    <color name="zx_stroke">#22344A</color>
+    <color name="zx_stroke_strong">#2E4A66</color>
+
+    <!-- Brand ramp -->
+    <color name="zx_cyan">#18C8FF</color>
+    <color name="zx_cyan_soft">#63DFFF</color>
+    <color name="zx_blue">#3B7BFF</color>
+    <color name="zx_purple">#7A5CFF</color>
+
+    <!-- Focus (the one focus language: brand gradient fill + light ring) -->
+    <color name="zx_focus_ring">#EAFBFF</color>
+    <color name="zx_selected_fill">#12284A</color>
+    <color name="zx_selected_stroke">#2F8FE8</color>
+
+    <!-- Text -->
+    <color name="zx_text_primary">#F4F8FF</color>
+    <color name="zx_text_secondary">#B4C1D3</color>
+    <color name="zx_text_muted">#7E8CA3</color>
+    <color name="zx_text_error">#FF8A9A</color>
+
+    <!-- Destructive -->
+    <color name="zx_danger">#FF4D6A</color>
+    <color name="zx_danger_deep">#C2243F</color>
+    <color name="zx_danger_surface">#2A0F18</color>
+    <color name="zx_danger_stroke">#7A2638</color>
+    <color name="zx_danger_text">#FF9AAB</color>
+
+    <!-- Status badges -->
+    <color name="zx_badge_installed_fill">#E00B2E40</color>
+    <color name="zx_badge_installed_stroke">#4FD7F0</color>
+    <color name="zx_badge_installed_text">#DDF9FF</color>
+    <color name="zx_badge_update_fill">#E0261C58</color>
+    <color name="zx_badge_update_stroke">#9C86FF</color>
+    <color name="zx_badge_update_text">#EFEAFF</color>
+
+    <!-- Launcher (kept for the adaptive icon) -->
     <color name="zappix_launcher_bg">#050812</color>
 </resources>

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -71,15 +72,15 @@ class AppAdapter(
             name.text = item.app.name
             when (item.state) {
                 InstallState.INSTALLED -> {
-                    badge.text = "Installed"
+                    badge.setText(R.string.zx_badge_installed)
                     badge.setBackgroundResource(R.drawable.bg_installed_badge)
-                    badge.setTextColor(0xFFD9FAFF.toInt())
+                    badge.setTextColor(ContextCompat.getColor(itemView.context, R.color.zx_badge_installed_text))
                     badge.visibility = View.VISIBLE
                 }
                 InstallState.UPDATE -> {
-                    badge.text = "Update"
+                    badge.setText(R.string.zx_badge_update)
                     badge.setBackgroundResource(R.drawable.bg_update_badge)
-                    badge.setTextColor(0xFFFFEBB8.toInt())
+                    badge.setTextColor(ContextCompat.getColor(itemView.context, R.color.zx_badge_update_text))
                     badge.visibility = View.VISIBLE
                 }
                 InstallState.NOT_INSTALLED -> badge.visibility = View.GONE
@@ -96,24 +97,24 @@ class AppAdapter(
         }
 
         private fun applyFocusState(focused: Boolean, animate: Boolean) {
-            val scale = if (focused) 1.08f else 1f
-            val lift = if (focused) -4f * density else 0f
+            val scale = if (focused) FOCUS_SCALE else 1f
+            val lift = if (focused) -FOCUS_LIFT_DP * density else 0f
             // translationZ only changes drawing order here (the card has no outline, so no shadow).
             itemView.translationZ = if (focused) 8f * density else 0f
             itemView.animate().cancel()
             glow.animate().cancel()
-            name.alpha = if (focused) 1f else 0.78f
+            name.alpha = if (focused) 1f else 0.8f
             if (animate) {
                 itemView.animate()
                     .scaleX(scale)
                     .scaleY(scale)
                     .translationY(lift)
                     .setInterpolator(FOCUS_INTERPOLATOR)
-                    .setDuration(if (focused) 150L else 110L)
+                    .setDuration(if (focused) 140L else 110L)
                     .start()
                 if (focused) {
                     glow.visibility = View.VISIBLE
-                    glow.animate().alpha(1f).setDuration(150L).start()
+                    glow.animate().alpha(1f).setDuration(120L).start()
                 } else {
                     glow.animate().alpha(0f).setDuration(90L)
                         .withEndAction { if (!itemView.hasFocus()) glow.visibility = View.INVISIBLE }
@@ -136,8 +137,12 @@ class AppAdapter(
             if (oldItem.app == newItem.app) PAYLOAD_STATE else null
     }
 
-    private companion object {
-        const val PAYLOAD_STATE = "state"
-        val FOCUS_INTERPOLATOR = DecelerateInterpolator(1.6f)
+    companion object {
+        /** Card focus scale. Kept at or below 1.03 so a focused card never reaches the row edges. */
+        const val FOCUS_SCALE = 1.03f
+        /** Upward lift of a focused card, in dp. */
+        const val FOCUS_LIFT_DP = 2f
+        private const val PAYLOAD_STATE = "state"
+        private val FOCUS_INTERPOLATOR = DecelerateInterpolator(1.6f)
     }
 }

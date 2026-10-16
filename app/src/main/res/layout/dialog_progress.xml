@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Body of the "Updating Zappix" dialog: brand progress bar + status line. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="420dp"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="8dp">
+
+    <ProgressBar
+        android:id="@+id/dialogProgress"
+        style="@style/ZappixProgress"
+        android:layout_width="match_parent"
+        android:indeterminate="true" />
+
+    <TextView
+        android:id="@+id/dialogProgressLabel"
+        style="@style/ZappixText.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/zx_downloading"
+        android:textColor="@color/zx_text_secondary"
+        android:textSize="14sp" />
+</LinearLayout>

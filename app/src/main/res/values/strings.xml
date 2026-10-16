@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="zx_brand" translatable="false">Zappix</string>
+    <string name="zx_tagline">Your apps. One place.</string>
+    <string name="zx_refresh">Refresh</string>
+    <string name="zx_refreshing">Refreshing…</string>
+    <string name="zx_nav_free">Free</string>
+    <string name="zx_nav_subscription">Subscription</string>
+    <string name="zx_nav_adult">Adult 18+</string>
+    <string name="zx_nav_tools">Tools</string>
+    <string name="zx_nav_updates">Updates</string>
+    <string name="zx_nav_updates_count">Updates · %1$d</string>
+    <string name="zx_featured">FEATURED</string>
+    <string name="zx_featured_app">Featured app</string>
+    <string name="zx_view">View</string>
+    <string name="zx_section_free">Free Apps</string>
+    <string name="zx_empty_section">No apps in this section yet.</string>
+    <string name="zx_app_details">APP DETAILS</string>
+    <string name="zx_app_artwork">App artwork</string>
+    <string name="zx_screenshot">Screenshot</string>
+    <string name="zx_install">Install</string>
+    <string name="zx_uninstall">Uninstall</string>
+    <string name="zx_back">Back</string>
+    <string name="zx_badge_installed">Installed</string>
+    <string name="zx_badge_update">Update</string>
+    <string name="zx_downloading">Downloading…</string>
+    <string name="zx_download_starting">Starting download…</string>
+    <string name="zx_download_progress">Downloading · %1$s · %2$s of %3$s</string>
+    <string name="zx_download_bytes">Downloading · %1$s</string>
+</resources>

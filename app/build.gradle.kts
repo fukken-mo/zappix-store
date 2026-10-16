@@ -59,6 +59,24 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { buildConfig = true }
+
+    // Robolectric layout tests inflate the real XML resources.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            it.testLogging {
+                events("passed", "skipped", "failed")
+                exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+            }
+        }
+    }
+
+    lint {
+        textReport = true
+        // Zappix is an app store: it must see every installed catalog app, which a <queries>
+        // block cannot express for a server-driven catalog. Sideloaded, not distributed on Play.
+        disable += "QueryAllPackagesPermission"
+    }
 }
 
 dependencies {
@@ -69,4 +87,8 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("io.coil-kt:coil:2.7.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test:core:1.6.1")
 }
