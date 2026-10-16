@@ -61,12 +61,21 @@ android {
     buildFeatures { buildConfig = true }
 
     // Robolectric layout tests inflate the real XML resources.
-    testOptions { unitTests.isIncludeAndroidResources = true }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            it.testLogging {
+                events("passed", "skipped", "failed")
+                exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+            }
+        }
+    }
 
     lint {
-        // Print the full report into the CI log.
         textReport = true
-        textOutput = file("stdout")
+        // Zappix is an app store: it must see every installed catalog app, which a <queries>
+        // block cannot express for a server-driven catalog. Sideloaded, not distributed on Play.
+        disable += "QueryAllPackagesPermission"
     }
 }
 
