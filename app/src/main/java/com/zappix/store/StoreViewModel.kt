@@ -31,6 +31,7 @@ class StoreViewModel(
     var adultConfirmed = false
 
     private var refreshJob: Job? = null
+    private var updateCheckJob: Job? = null
 
     init {
         refresh()
@@ -54,7 +55,8 @@ class StoreViewModel(
     }
 
     fun checkForUpdate() {
-        viewModelScope.launch {
+        if (updateCheckJob?.isActive == true) return
+        updateCheckJob = viewModelScope.launch {
             try {
                 _update.value = updateChecker.check()
             } catch (e: CancellationException) {

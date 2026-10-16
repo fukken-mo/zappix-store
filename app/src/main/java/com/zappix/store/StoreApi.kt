@@ -15,6 +15,8 @@ class StoreApi(
         val request = Request.Builder()
             .url(BuildConfig.API_BASE_URL.trimEnd('/') + "/apps.php")
             .header("Accept", "application/json")
+            .header("Cache-Control", "no-cache, no-store")
+            .header("Pragma", "no-cache")
             .build()
 
         client.newCall(request).execute().use { response ->
@@ -48,7 +50,9 @@ class StoreApi(
 
     /** One malformed entry must not take the whole store down, so bad entries are skipped. */
     private fun parseApp(item: JSONObject): StoreApp? {
-        val id = item.longOrNull("id")?.toInt() ?: return null
+        val rawId = item.longOrNull("id") ?: return null
+        if (rawId !in Int.MIN_VALUE.toLong()..Int.MAX_VALUE.toLong()) return null
+        val id = rawId.toInt()
         val name = item.stringOrNull("name") ?: return null
         val downloadUrl = item.stringOrNull("download_url") ?: return null
         return StoreApp(

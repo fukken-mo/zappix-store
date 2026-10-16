@@ -140,7 +140,6 @@
                     android:layout_width="82dp"
                     android:layout_height="82dp"
                     android:background="@drawable/bg_app_placeholder"
-                    android:clipToOutline="true"
                     android:outlineProvider="background"
                     android:scaleType="centerCrop" />
 
@@ -373,7 +372,6 @@
                         android:layout_width="164dp"
                         android:layout_height="92dp"
                         android:background="@drawable/bg_screenshot"
-                        android:clipToOutline="true"
                         android:outlineProvider="background"
                         android:scaleType="centerCrop" />
 
@@ -383,7 +381,6 @@
                         android:layout_height="92dp"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/bg_screenshot"
-                        android:clipToOutline="true"
                         android:outlineProvider="background"
                         android:scaleType="centerCrop" />
 
@@ -393,7 +390,6 @@
                         android:layout_height="92dp"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/bg_screenshot"
-                        android:clipToOutline="true"
                         android:outlineProvider="background"
                         android:scaleType="centerCrop" />
                 </LinearLayout>
