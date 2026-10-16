@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_focused="true"><layer-list>
-        <item><shape><corners android:radius="23dp"/><gradient android:angle="0" android:startColor="#FFB83D" android:endColor="#FF7A45"/><stroke android:width="2dp" android:color="#FFF6E8"/></shape></item>
-        <item android:left="3dp" android:top="3dp" android:right="3dp" android:bottom="3dp"><shape><corners android:radius="20dp"/><gradient android:angle="90" android:startColor="#28FFFFFF" android:endColor="#2C1704"/></shape></item>
-    </layer-list></item>
-    <item android:state_selected="true"><shape><corners android:radius="23dp"/><gradient android:angle="0" android:startColor="#4B3411" android:endColor="#4C2617"/><stroke android:width="1dp" android:color="#F2A33C"/></shape></item>
-    <item><shape><corners android:radius="23dp"/><solid android:color="#1A1610"/><stroke android:width="1dp" android:color="#44321E"/></shape></item>
-</selector>

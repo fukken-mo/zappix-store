@@ -67,6 +67,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var detailScreenshot2: ImageView
     private lateinit var detailScreenshot3: ImageView
     private lateinit var detailErrorFull: TextView
+    private lateinit var detailProgressGroup: View
+    private lateinit var detailProgress: ProgressBar
+    private lateinit var detailProgressLabel: TextView
     private lateinit var installFullButton: Button
     private lateinit var uninstallFullButton: Button
     private lateinit var backFullButton: Button
@@ -102,6 +105,8 @@ class MainActivity : ComponentActivity() {
     private class ActiveDownload(val appId: Int, val name: String, val job: Job)
     private var activeDownload: ActiveDownload? = null
     private var downloadProgressText: String? = null
+    private var downloadDoneBytes = 0L
+    private var downloadTotalBytes = -1L
     private var pendingInstall: PreparedApk? = null
 
     private sealed class PermissionTarget {
@@ -168,6 +173,9 @@ class MainActivity : ComponentActivity() {
         detailScreenshot2 = findViewById(R.id.detailScreenshot2)
         detailScreenshot3 = findViewById(R.id.detailScreenshot3)
         detailErrorFull = findViewById(R.id.detailErrorFull)
+        detailProgressGroup = findViewById(R.id.detailProgressGroup)
+        detailProgress = findViewById(R.id.detailProgress)
+        detailProgressLabel = findViewById(R.id.detailProgressLabel)
         installFullButton = findViewById(R.id.installFullButton)
         uninstallFullButton = findViewById(R.id.uninstallFullButton)
         backFullButton = findViewById(R.id.backFullButton)
@@ -298,6 +306,8 @@ class MainActivity : ComponentActivity() {
     // ---------------------------------------------------------------------------------------
 
     private fun render(state: StoreUiState) {
+        refreshButton.isActivated = state.loading
+        refreshButton.text = if (state.loading) "Refreshing…" else "Refresh"
         errorText.text = state.error.orEmpty()
         errorText.visibility = if (state.error != null) View.VISIBLE else View.GONE
         if (state.apps !== allApps) {
@@ -484,7 +494,6 @@ class MainActivity : ComponentActivity() {
         tabs.forEach { (view, section) ->
             val selected = section == currentSection
             view.isSelected = selected
-            view.alpha = if (selected || view.isFocused) 1f else 0.72f
         }
         refreshButton.nextFocusDownId = tabFor(currentSection).id
     }
@@ -494,7 +503,7 @@ class MainActivity : ComponentActivity() {
         setTabVisible(toolsTab, allApps.any { it.type == AppType.TOOLS })
         val updateCount = allApps.count { installState(it) == InstallState.UPDATE }
         setTabVisible(updatesTab, updateCount > 0)
-        updatesTab.text = if (updateCount > 0) "↑  Updates  $updateCount" else "↑  Updates"
+        updatesTab.text = if (updateCount > 0) "Updates · $updateCount" else "Updates"
 
         // First/last visible tab: LEFT/RIGHT stay on the tab row instead of jumping to Refresh.
         val visible = tabs.map { it.first }.filter { it.visibility == View.VISIBLE }
@@ -598,6 +607,33 @@ class MainActivity : ComponentActivity() {
             state == InstallState.UPDATE -> "Update"
             else -> "Install"
         }
+        val icon = when {
+            downloading -> R.drawable.ic_action_install
+            isSelf(app) && state == InstallState.INSTALLED -> R.drawable.ic_action_done
+            state == InstallState.INSTALLED -> R.drawable.ic_action_open
+            state == InstallState.UPDATE -> R.drawable.ic_action_update
+            else -> R.drawable.ic_action_install
+        }
+        installFullButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, 0, 0, 0)
+        // Re-apply the style's tint to the newly set icon (white on the primary button).
+        installFullButton.compoundDrawableTintList =
+            ContextCompat.getColorStateList(this, R.color.zx_btn_primary_content)
+        detailProgressGroup.visibility = if (downloading) View.VISIBLE else View.GONE
+        if (downloading) renderDetailProgress()
+    }
+
+    /** Download progress bar + label for the app shown in Details. */
+    private fun renderDetailProgress() {
+        val total = downloadTotalBytes
+        val done = downloadDoneBytes
+        if (total > 0) {
+            detailProgress.isIndeterminate = false
+            detailProgress.progress = (done * 100 / total).toInt().coerceIn(0, 100)
+            detailProgressLabel.text = "Downloading · ${formatProgress(done, total)} · ${formatBytes(done)} of ${formatBytes(total)}"
+        } else {
+            detailProgress.isIndeterminate = true
+            detailProgressLabel.text = if (done > 0) "Downloading · ${formatBytes(done)}" else "Starting download…"
+        }
     }
 
     private fun onPrimaryDetailAction() {
@@ -650,6 +686,8 @@ class MainActivity : ComponentActivity() {
             sha256 = app.sha256
         )
         downloadProgressText = "Downloading…"
+        downloadDoneBytes = 0L
+        downloadTotalBytes = -1L
         val job = lifecycleScope.launch {
             try {
                 val prepared = installer.download(request) { done, total ->
@@ -657,7 +695,12 @@ class MainActivity : ComponentActivity() {
                     runOnUiThread {
                         if (activeDownload?.appId == app.id) {
                             downloadProgressText = text
-                            if (detailApp?.id == app.id) installFullButton.text = text
+                            downloadDoneBytes = done
+                            downloadTotalBytes = total
+                            if (detailApp?.id == app.id) {
+                                installFullButton.text = text
+                                renderDetailProgress()
+                            }
                         }
                     }
                 }
@@ -681,6 +724,8 @@ class MainActivity : ComponentActivity() {
         if (activeDownload?.appId != appId) return
         activeDownload = null
         downloadProgressText = null
+        downloadDoneBytes = 0L
+        downloadTotalBytes = -1L
         renderDetailButtons()
     }
 
@@ -819,9 +864,12 @@ class MainActivity : ComponentActivity() {
         pendingInstall = null
         installer.cleanup()
 
+        val progressView = layoutInflater.inflate(R.layout.dialog_progress, null)
+        val progressBar = progressView.findViewById<ProgressBar>(R.id.dialogProgress)
+        val progressLabel = progressView.findViewById<TextView>(R.id.dialogProgressLabel)
         val progressBuilder = AlertDialog.Builder(this, R.style.Theme_Zappix_Dialog)
             .setTitle("Updating Zappix")
-            .setMessage("Downloading…")
+            .setView(progressView)
             .setCancelable(false)
         if (!info.required) {
             progressBuilder.setNegativeButton("Cancel") { _, _ ->
@@ -845,7 +893,13 @@ class MainActivity : ComponentActivity() {
             try {
                 val prepared = installer.download(request) { done, total ->
                     val text = "Downloading… ${formatProgress(done, total)}"
-                    runOnUiThread { progress.setMessage(text) }
+                    runOnUiThread {
+                        progressLabel.text = text
+                        if (total > 0) {
+                            progressBar.isIndeterminate = false
+                            progressBar.progress = (done * 100 / total).toInt().coerceIn(0, 100)
+                        }
+                    }
                 }
                 dismissSafely(progress)
                 finishDownload(SELF_ID)

@@ -59,6 +59,15 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { buildConfig = true }
+
+    // Robolectric layout tests inflate the real XML resources.
+    testOptions { unitTests.isIncludeAndroidResources = true }
+
+    lint {
+        // Print the full report into the CI log.
+        textReport = true
+        textOutput = file("stdout")
+    }
 }
 
 dependencies {
@@ -69,4 +78,8 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("io.coil-kt:coil:2.7.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test:core:1.6.1")
 }
