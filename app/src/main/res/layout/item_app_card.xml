@@ -24,6 +24,7 @@
             android:layout_height="@dimen/zx_card_art"
             android:layout_gravity="center"
             android:background="@drawable/bg_app_placeholder"
+            android:elevation="3dp"
             android:importantForAccessibility="no"
             android:outlineProvider="background"
             android:scaleType="centerCrop" />
@@ -59,6 +60,6 @@
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
         android:textColor="@color/zx_text_primary"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 </LinearLayout>
