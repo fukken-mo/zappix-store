@@ -92,9 +92,6 @@ class TvLayoutTest {
         }
         root.findViewById<TextView>(R.id.updatesTab).text = "Updates · 99"
         root.findViewById<TextView>(R.id.refreshButton).text = "Refreshing…"
-        root.findViewById<View>(R.id.featuredCard).visibility = View.VISIBLE
-        root.findViewById<TextView>(R.id.featuredName).text = "A Very Long Featured Application Name That Keeps Going"
-        root.findViewById<TextView>(R.id.featuredDescription).text = "A long featured description ".repeat(8)
         root.findViewById<TextView>(R.id.sectionTitle).text = "Subscription Apps"
         root.findViewById<TextView>(R.id.errorText).apply {
             visibility = View.VISIBLE
@@ -112,7 +109,6 @@ class TvLayoutTest {
             "adult" to R.id.adultTab,
             "tools" to R.id.toolsTab,
             "updates" to R.id.updatesTab,
-            "featured" to R.id.featuredCard,
             "sectionTitle" to R.id.sectionTitle,
             "errorText" to R.id.errorText
         )
