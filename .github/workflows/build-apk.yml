@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - 'ui/premium-fullscreen-layout'
 
 jobs:
   build:
