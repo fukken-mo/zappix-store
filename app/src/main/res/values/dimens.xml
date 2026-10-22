@@ -6,7 +6,7 @@
 <resources>
     <!-- Safe area -->
     <dimen name="zx_safe_h">56dp</dimen>
-    <dimen name="zx_safe_v">24dp</dimen>
+    <dimen name="zx_safe_v">28dp</dimen>
     <dimen name="zx_details_safe_h">56dp</dimen>
     <dimen name="zx_details_safe_v">36dp</dimen>
 
