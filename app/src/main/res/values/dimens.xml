@@ -20,7 +20,7 @@
     <dimen name="zx_focus_ring">2dp</dimen>
 
     <!-- Header -->
-    <dimen name="zx_header_height">76dp</dimen>
+    <dimen name="zx_header_height">80dp</dimen>
     <dimen name="zx_logo_tile">60dp</dimen>
 
     <!-- Navigation pills and controls -->
@@ -35,17 +35,17 @@
     <dimen name="zx_featured_art">56dp</dimen>
 
     <!-- App row and cards -->
-    <dimen name="zx_row_height">280dp</dimen>
-    <dimen name="zx_row_pad_top">18dp</dimen>
-    <dimen name="zx_row_pad_bottom">10dp</dimen>
+    <dimen name="zx_row_height">270dp</dimen>
+    <dimen name="zx_row_pad_top">16dp</dimen>
+    <dimen name="zx_row_pad_bottom">14dp</dimen>
     <dimen name="zx_row_pad_end">80dp</dimen>
-    <dimen name="zx_card_width">188dp</dimen>
-    <dimen name="zx_card_height">244dp</dimen>
-    <dimen name="zx_card_gap">16dp</dimen>
-    <dimen name="zx_card_pad">4dp</dimen>
-    <dimen name="zx_card_frame">184dp</dimen>
-    <dimen name="zx_card_art">174dp</dimen>
-    <dimen name="zx_card_name_height">38dp</dimen>
+    <dimen name="zx_card_width">184dp</dimen>
+    <dimen name="zx_card_height">240dp</dimen>
+    <dimen name="zx_card_gap">14dp</dimen>
+    <dimen name="zx_card_pad">6dp</dimen>
+    <dimen name="zx_card_frame">172dp</dimen>
+    <dimen name="zx_card_art">172dp</dimen>
+    <dimen name="zx_card_depth">4dp</dimen>
 
     <!-- Details -->
     <dimen name="zx_details_art_tile">240dp</dimen>
@@ -54,14 +54,18 @@
     <dimen name="zx_shot_height">76dp</dimen>
     <dimen name="zx_button_height">52dp</dimen>
     <dimen name="zx_button_gap">14dp</dimen>
-    <dimen name="zx_progress_height">6dp</dimen>
+    <dimen name="zx_progress_height">8dp</dimen>
+
+    <!-- Card text -->
+    <dimen name="zx_text_card_name">17sp</dimen>
+    <dimen name="zx_text_card_sub">13sp</dimen>
 
     <!-- Type scale -->
     <dimen name="zx_text_brand">30sp</dimen>
     <dimen name="zx_text_details_title">30sp</dimen>
     <dimen name="zx_text_title">22sp</dimen>
-    <dimen name="zx_text_body">15sp</dimen>
+    <dimen name="zx_text_body">16sp</dimen>
     <dimen name="zx_text_control">15sp</dimen>
     <dimen name="zx_text_caption">14sp</dimen>
-    <dimen name="zx_text_overline">11sp</dimen>
+    <dimen name="zx_text_overline">12sp</dimen>
 </resources>

@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Download progress: dark track, brand-gradient fill. -->
+<!-- Download progress: inset glass track, brand-gradient fill with a light top edge. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape>
-            <corners android:radius="3dp" />
-            <solid android:color="@color/zx_surface_raised" />
+            <corners android:radius="4dp" />
+            <solid android:color="#0A1426" />
+            <stroke android:width="1dp" android:color="#2A4466" />
         </shape>
     </item>
     <item android:id="@android:id/progress">
         <clip>
-            <shape>
-                <corners android:radius="3dp" />
-                <gradient android:angle="0" android:startColor="@color/zx_cyan" android:centerColor="@color/zx_blue" android:endColor="@color/zx_purple" />
-            </shape>
+            <layer-list>
+                <item>
+                    <shape>
+                        <corners android:radius="4dp" />
+                        <gradient android:angle="0" android:startColor="@color/zx_cyan" android:centerColor="@color/zx_blue" android:endColor="@color/zx_purple" />
+                    </shape>
+                </item>
+                <item android:bottom="4dp">
+                    <shape>
+                        <corners android:radius="4dp" />
+                        <solid android:color="#40FFFFFF" />
+                    </shape>
+                </item>
+            </layer-list>
         </clip>
     </item>
 </layer-list>

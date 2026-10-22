@@ -24,7 +24,7 @@
 
     <style name="ZappixDialogTitle" parent="android:TextAppearance.Material.DialogWindowTitle">
         <item name="android:textColor">@color/zx_text_primary</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -58,6 +58,7 @@
         <item name="android:maxLines">1</item>
         <item name="android:paddingStart">14dp</item>
         <item name="android:paddingEnd">18dp</item>
+        <item name="android:paddingBottom">3dp</item>
         <item name="android:drawablePadding">@dimen/zx_icon_gap</item>
         <item name="android:drawableTint">@color/zx_nav_content</item>
         <item name="android:textColor">@color/zx_nav_text</item>
@@ -74,6 +75,9 @@
         <item name="android:gravity">center</item>
         <item name="android:paddingStart">20dp</item>
         <item name="android:paddingEnd">24dp</item>
+        <!-- The raised face ends 3dp above the bottom (baked shadow), so centre content on the face. -->
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">3dp</item>
         <item name="android:drawablePadding">10dp</item>
         <item name="android:focusable">true</item>
         <item name="android:stateListAnimator">@null</item>
@@ -144,12 +148,12 @@
 
     <style name="ZappixBadge">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">22dp</item>
+        <item name="android:layout_height">24dp</item>
         <item name="android:gravity">center</item>
         <item name="android:maxLines">1</item>
-        <item name="android:paddingStart">9dp</item>
-        <item name="android:paddingEnd">9dp</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.04</item>
     </style>

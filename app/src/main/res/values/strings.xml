@@ -23,6 +23,10 @@
     <string name="zx_back">Back</string>
     <string name="zx_badge_installed">Installed</string>
     <string name="zx_badge_update">Update</string>
+    <string name="zx_card_free">Free</string>
+    <string name="zx_card_subscription">Subscription</string>
+    <string name="zx_card_adult">18+</string>
+    <string name="zx_card_tools">Tool</string>
     <string name="zx_downloading">Downloading…</string>
     <string name="zx_download_starting">Starting download…</string>
     <string name="zx_download_progress">Downloading · %1$s · %2$s of %3$s</string>

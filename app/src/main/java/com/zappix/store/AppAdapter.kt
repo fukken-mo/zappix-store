@@ -46,6 +46,7 @@ class AppAdapter(
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val artwork: ImageView = itemView.findViewById(R.id.appArtwork)
         private val name: TextView = itemView.findViewById(R.id.appName)
+        private val subtitle: TextView = itemView.findViewById(R.id.appSubtitle)
         private val glow: View = itemView.findViewById(R.id.focusFrame)
         private val badge: TextView = itemView.findViewById(R.id.installedBadge)
         private val density = itemView.resources.displayMetrics.density
@@ -70,6 +71,14 @@ class AppAdapter(
         fun bind(item: AppItem, loadArtwork: Boolean) {
             this.item = item
             name.text = item.app.name
+            subtitle.text = item.app.priceLabel ?: itemView.context.getString(
+                when (item.app.type) {
+                    AppType.FREE -> R.string.zx_card_free
+                    AppType.SUBSCRIPTION -> R.string.zx_card_subscription
+                    AppType.ADULT -> R.string.zx_card_adult
+                    AppType.TOOLS -> R.string.zx_card_tools
+                }
+            )
             when (item.state) {
                 InstallState.INSTALLED -> {
                     badge.setText(R.string.zx_badge_installed)
@@ -103,7 +112,7 @@ class AppAdapter(
             itemView.translationZ = if (focused) 8f * density else 0f
             itemView.animate().cancel()
             glow.animate().cancel()
-            name.alpha = if (focused) 1f else 0.8f
+            name.alpha = if (focused) 1f else 0.85f
             if (animate) {
                 itemView.animate()
                     .scaleX(scale)

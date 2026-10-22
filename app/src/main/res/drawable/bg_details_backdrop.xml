@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Details backdrop: lets the same layered window background as home show through (darkened for
+  text contrast), plus a soft cyan pool of light behind the artwork.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient android:angle="0" android:startColor="#B8020713" android:centerColor="#CC020713" android:endColor="#D9020713" />
+        </shape>
+    </item>
+    <item android:gravity="center_vertical|left" android:width="520dp" android:height="460dp">
+        <shape android:shape="oval">
+            <gradient android:type="radial" android:gradientRadius="250dp" android:startColor="#2A18C8FF" android:centerColor="#123B7BFF" android:endColor="#003B7BFF" />
+        </shape>
+    </item>
+</layer-list>

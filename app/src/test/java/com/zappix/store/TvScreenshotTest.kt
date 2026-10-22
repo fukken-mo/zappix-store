@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
-import android.view.KeyEvent
 import android.view.View
 import android.view.View.MeasureSpec
 import android.widget.Button
@@ -106,15 +105,15 @@ class TvScreenshotTest {
         }
 
         settle(); layoutAll(); settle(); layoutAll(); paintArt()
-        recycler.getChildAt(1)?.requestFocus()
+        recycler.getChildAt(1)?.requestFocusFromTouch()
         settle(); layoutAll(); paintArt()
         save("home_card_focused", root, width, height)
 
-        activity.findViewById<View>(R.id.subscriptionTab).requestFocus()
+        activity.findViewById<View>(R.id.subscriptionTab).requestFocusFromTouch()
         settle(); layoutAll(); paintArt()
         save("home_tab_focused", root, width, height)
 
-        activity.findViewById<View>(R.id.refreshButton).requestFocus()
+        activity.findViewById<View>(R.id.refreshButton).requestFocusFromTouch()
         settle(); layoutAll(); paintArt()
         save("home_refresh_focused", root, width, height)
 
@@ -132,11 +131,11 @@ class TvScreenshotTest {
             activity.findViewById<ImageView>(id).setImageDrawable(fakeArt(i + 2))
         }
         activity.findViewById<View>(R.id.uninstallFullButton).visibility = View.VISIBLE
-        activity.findViewById<Button>(R.id.installFullButton).apply { text = "Update"; requestFocus() }
+        activity.findViewById<Button>(R.id.installFullButton).apply { text = "Update"; requestFocusFromTouch() }
         settle(); layoutAll()
         save("details_primary_focused", root, width, height)
 
-        activity.findViewById<View>(R.id.uninstallFullButton).requestFocus()
+        activity.findViewById<View>(R.id.uninstallFullButton).requestFocusFromTouch()
         settle(); layoutAll()
         save("details_uninstall_focused", root, width, height)
 
@@ -144,9 +143,8 @@ class TvScreenshotTest {
         activity.findViewById<View>(R.id.uninstallFullButton).visibility = View.GONE
         activity.findViewById<android.widget.ProgressBar>(R.id.detailProgress).apply { isIndeterminate = false; progress = 42 }
         activity.findViewById<TextView>(R.id.detailProgressLabel).text = "Downloading · 42% · 16.2 MB of 38.6 MB"
-        activity.findViewById<Button>(R.id.installFullButton).apply { text = "Downloading 42%"; isActivated = true; requestFocus() }
+        activity.findViewById<Button>(R.id.installFullButton).apply { text = "Downloading 42%"; isActivated = true; requestFocusFromTouch() }
         settle(); layoutAll()
         save("details_downloading", root, width, height)
-        KeyEvent.KEYCODE_UNKNOWN // keep import used
     }
 }

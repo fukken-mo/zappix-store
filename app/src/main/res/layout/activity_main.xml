@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Zappix home + Details on the 960x540dp TV canvas.
-  Home vertical budget (worst case, Featured visible):
-    28 safe + 48 header + 14 + 44 nav + 14 + 84 featured + 12 + 24 title + 4 + 232 row = 504dp,
-  leaving the bottom 36dp (>= 27dp overscan) empty.
+  Home vertical budget (card-first premium layout):
+    28 safe + 80 header + 16 + 52 nav + 14 + 30 title + 6 + 270 row = 496dp  (safe bottom = 513dp).
+  Cards: 16 pad + 240 card + 14 pad inside the row; a focused card (x1.03, 2dp lift) ends at ~486dp.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -31,50 +31,60 @@
             android:elevation="6dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp">
+            android:paddingStart="10dp"
+            android:paddingEnd="16dp">
 
             <FrameLayout
                 android:layout_width="@dimen/zx_logo_tile"
                 android:layout_height="@dimen/zx_logo_tile"
                 android:background="@drawable/bg_logo_tile"
-                android:elevation="10dp"
-                android:padding="8dp">
+                android:elevation="8dp"
+                android:paddingStart="8dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="10dp">
 
                 <ImageView
+                    android:id="@+id/headerLogo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@drawable/bg_logo_image"
                     android:contentDescription="@string/zx_brand"
-                    android:scaleType="centerInside"
+                    android:outlineProvider="background"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/zappix_icon" />
             </FrameLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
+                android:layout_marginStart="16dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
                     android:includeFontPadding="false"
+                    android:letterSpacing="0.01"
                     android:maxLines="1"
                     android:text="@string/zx_brand"
                     android:textColor="@color/zx_text_primary"
                     android:textSize="@dimen/zx_text_brand"
                     android:textStyle="bold"
-                    android:shadowColor="#99000000"
+                    android:shadowColor="#AA000814"
                     android:shadowDx="0"
                     android:shadowDy="2"
-                    android:shadowRadius="4" />
+                    android:shadowRadius="6" />
 
                 <TextView
                     style="@style/ZappixText.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/zx_tagline" />
+                    android:layout_marginTop="4dp"
+                    android:letterSpacing="0.02"
+                    android:text="@string/zx_tagline"
+                    android:textColor="@color/zx_text_tagline" />
             </LinearLayout>
 
             <Space
@@ -96,8 +106,9 @@
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:minWidth="140dp"
-                android:paddingStart="14dp"
-                android:paddingEnd="18dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="4dp"
                 android:text="@string/zx_refresh"
                 android:textColor="@color/zx_btn_secondary_content"
                 android:textSize="@dimen/zx_text_control"
@@ -233,6 +244,12 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <View
+                android:layout_width="4dp"
+                android:layout_height="22dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_section_accent" />
+
             <TextView
                 android:id="@+id/sectionTitle"
                 style="@style/ZappixText.Title"
@@ -305,7 +322,7 @@
         android:id="@+id/detailsOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_details_scrim"
+        android:background="@drawable/bg_details_backdrop"
         android:clickable="true"
         android:descendantFocusability="afterDescendants"
         android:focusable="false"
@@ -327,8 +344,12 @@
                 android:id="@+id/detailArtworkTile"
                 android:layout_width="@dimen/zx_details_art_tile"
                 android:layout_height="@dimen/zx_details_art_tile"
-                android:background="@drawable/bg_logo_tile"
-                android:padding="14dp">
+                android:background="@drawable/bg_details_art_tile"
+                android:elevation="8dp"
+                android:paddingStart="16dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="18dp">
 
                 <ImageView
                     android:id="@+id/detailArtworkFull"
@@ -360,6 +381,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:ellipsize="end"
+                    android:fontFamily="sans-serif-medium"
+                    android:shadowColor="#AA000814"
+                    android:shadowDy="2"
+                    android:shadowRadius="6"
                     android:maxLines="1"
                     android:textColor="@color/zx_text_primary"
                     android:textSize="@dimen/zx_text_details_title"
@@ -471,8 +496,9 @@
                         style="@style/ZappixText.Caption"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:textColor="@color/zx_text_secondary" />
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/zx_text_primary"
+                        android:textSize="15sp" />
                 </LinearLayout>
 
                 <LinearLayout

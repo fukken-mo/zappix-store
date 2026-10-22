@@ -2,17 +2,43 @@
 <!-- Destructive action (Uninstall): red at rest and when focused, same light focus ring. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="true">
-        <shape>
-            <corners android:radius="@dimen/zx_radius_m" />
-            <gradient android:angle="0" android:startColor="@color/zx_danger" android:endColor="@color/zx_danger_deep" />
-            <stroke android:width="@dimen/zx_focus_ring" android:color="@color/zx_focus_ring" />
-        </shape>
+        <layer-list>
+            <item android:top="3dp">
+                <shape><corners android:radius="@dimen/zx_radius_m" /><solid android:color="#80000000" /></shape>
+            </item>
+            <item android:bottom="3dp">
+                <shape>
+                    <corners android:radius="@dimen/zx_radius_m" />
+                    <gradient android:angle="0" android:startColor="@color/zx_danger" android:endColor="@color/zx_danger_deep" />
+                    <stroke android:width="@dimen/zx_focus_ring" android:color="@color/zx_focus_ring" />
+                </shape>
+            </item>
+            <item android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="5dp">
+                <shape>
+                    <corners android:radius="12dp" />
+                    <gradient android:angle="270" android:startColor="#30FFFFFF" android:centerColor="#00FFFFFF" android:endColor="#00FFFFFF" />
+                </shape>
+            </item>
+        </layer-list>
     </item>
     <item>
-        <shape>
-            <corners android:radius="@dimen/zx_radius_m" />
-            <solid android:color="@color/zx_danger_surface" />
-            <stroke android:width="1dp" android:color="@color/zx_danger_stroke" />
-        </shape>
+        <layer-list>
+            <item android:top="3dp">
+                <shape><corners android:radius="@dimen/zx_radius_m" /><solid android:color="#59000000" /></shape>
+            </item>
+            <item android:bottom="3dp">
+                <shape>
+                    <corners android:radius="@dimen/zx_radius_m" />
+                    <gradient android:angle="270" android:startColor="#3A1220" android:centerColor="#2E0E19" android:endColor="#240A13" />
+                    <stroke android:width="1dp" android:color="#9A3048" />
+                </shape>
+            </item>
+            <item android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="5dp">
+                <shape>
+                    <corners android:radius="12dp" />
+                    <gradient android:angle="270" android:startColor="#14FFFFFF" android:centerColor="#00FFFFFF" android:endColor="#00FFFFFF" />
+                </shape>
+            </item>
+        </layer-list>
     </item>
 </selector>

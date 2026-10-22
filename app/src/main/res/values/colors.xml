@@ -28,6 +28,7 @@
     <color name="zx_text_primary">#F4F8FF</color>
     <color name="zx_text_secondary">#B4C1D3</color>
     <color name="zx_text_muted">#7E8CA3</color>
+    <color name="zx_text_tagline">#9DB4D3</color>
     <color name="zx_text_error">#FF8A9A</color>
 
     <!-- Destructive -->

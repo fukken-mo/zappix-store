@@ -182,6 +182,7 @@ class MainActivity : ComponentActivity() {
         onBackPressedDispatcher.addCallback(this, backCallback)
 
         detailArtworkFull.clipToOutline = true
+        findViewById<View>(R.id.headerLogo).clipToOutline = true
         featuredArtwork.clipToOutline = true
         detailScreenshot1.clipToOutline = true
         detailScreenshot2.clipToOutline = true

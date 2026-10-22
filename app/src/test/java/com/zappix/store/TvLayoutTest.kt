@@ -110,7 +110,8 @@ class TvLayoutTest {
             "tools" to R.id.toolsTab,
             "updates" to R.id.updatesTab,
             "sectionTitle" to R.id.sectionTitle,
-            "errorText" to R.id.errorText
+            "errorText" to R.id.errorText,
+            "row" to R.id.rowContainer
         )
         ids.forEach { (name, id) -> assertInside(name, safe, boundsIn(root, root.findViewById(id))) }
 
@@ -148,10 +149,17 @@ class TvLayoutTest {
         card.layout(0, 0, width, height)
         val cardBounds = RectF(0f, 0f, width.toFloat(), height.toFloat())
 
-        // Focus ring, artwork, badge and name are all drawn inside the card itself.
-        listOf(R.id.focusFrame, R.id.appArtwork, R.id.installedBadge, R.id.appName).forEach { id ->
+        // Focus ring, artwork, badge, name and subtitle are all drawn inside the card itself.
+        listOf(R.id.focusFrame, R.id.appArtwork, R.id.installedBadge, R.id.appName, R.id.appSubtitle).forEach { id ->
             assertInside("card child $id", cardBounds, boundsIn(card, card.findViewById(id)))
         }
+        // Text must sit on the tile face, above the baked depth shadow.
+        val face = RectF(0f, 0f, width.toFloat(), height - res.getDimension(R.dimen.zx_card_depth))
+        assertInside("card subtitle on face", face, boundsIn(card, card.findViewById(R.id.appSubtitle)))
+        // Installed/Update badge must draw above the artwork (a higher Z would hide it).
+        val badge = card.findViewById<View>(R.id.installedBadge)
+        val artwork = card.findViewById<View>(R.id.appArtwork)
+        assertTrue("badge is hidden under the artwork", badge.z >= artwork.z)
 
         val growV = height * (AppAdapter.FOCUS_SCALE - 1f) / 2f
         val growH = width * (AppAdapter.FOCUS_SCALE - 1f) / 2f
@@ -230,7 +238,10 @@ class TvLayoutTest {
             R.drawable.bg_btn_primary, R.drawable.bg_btn_secondary, R.drawable.bg_btn_destructive,
             R.drawable.bg_card_focus, R.drawable.bg_progress, R.drawable.bg_dialog,
             R.drawable.bg_dialog_button_primary, R.drawable.bg_dialog_button_secondary,
-            R.drawable.bg_featured_card, R.drawable.bg_details_scrim, R.drawable.bg_zappix
+            R.drawable.bg_featured_card, R.drawable.bg_details_backdrop, R.drawable.bg_zappix,
+            R.drawable.bg_card_surface, R.drawable.bg_card_art_sheen, R.drawable.bg_details_art_tile,
+            R.drawable.bg_logo_tile, R.drawable.bg_logo_image, R.drawable.bg_header_panel,
+            R.drawable.bg_section_accent
         )
         drawables.forEach { id ->
             val drawable = ContextCompat.getDrawable(context, id)
