@@ -6,7 +6,7 @@
 <resources>
     <!-- Safe area -->
     <dimen name="zx_safe_h">56dp</dimen>
-    <dimen name="zx_safe_v">28dp</dimen>
+    <dimen name="zx_safe_v">24dp</dimen>
     <dimen name="zx_details_safe_h">56dp</dimen>
     <dimen name="zx_details_safe_v">36dp</dimen>
 
@@ -20,32 +20,32 @@
     <dimen name="zx_focus_ring">2dp</dimen>
 
     <!-- Header -->
-    <dimen name="zx_header_height">48dp</dimen>
-    <dimen name="zx_logo_tile">44dp</dimen>
+    <dimen name="zx_header_height">76dp</dimen>
+    <dimen name="zx_logo_tile">60dp</dimen>
 
     <!-- Navigation pills and controls -->
-    <dimen name="zx_nav_row_height">44dp</dimen>
-    <dimen name="zx_nav_pill_height">40dp</dimen>
-    <dimen name="zx_nav_pill_gap">10dp</dimen>
+    <dimen name="zx_nav_row_height">52dp</dimen>
+    <dimen name="zx_nav_pill_height">46dp</dimen>
+    <dimen name="zx_nav_pill_gap">12dp</dimen>
     <dimen name="zx_icon_gap">8dp</dimen>
-    <dimen name="zx_section_gap">14dp</dimen>
+    <dimen name="zx_section_gap">16dp</dimen>
 
     <!-- Featured strip -->
-    <dimen name="zx_featured_height">84dp</dimen>
-    <dimen name="zx_featured_art">60dp</dimen>
+    <dimen name="zx_featured_height">76dp</dimen>
+    <dimen name="zx_featured_art">56dp</dimen>
 
     <!-- App row and cards -->
-    <dimen name="zx_row_height">232dp</dimen>
-    <dimen name="zx_row_pad_top">14dp</dimen>
-    <dimen name="zx_row_pad_bottom">12dp</dimen>
+    <dimen name="zx_row_height">280dp</dimen>
+    <dimen name="zx_row_pad_top">18dp</dimen>
+    <dimen name="zx_row_pad_bottom">10dp</dimen>
     <dimen name="zx_row_pad_end">80dp</dimen>
-    <dimen name="zx_card_width">176dp</dimen>
-    <dimen name="zx_card_height">206dp</dimen>
-    <dimen name="zx_card_gap">14dp</dimen>
+    <dimen name="zx_card_width">188dp</dimen>
+    <dimen name="zx_card_height">244dp</dimen>
+    <dimen name="zx_card_gap">16dp</dimen>
     <dimen name="zx_card_pad">4dp</dimen>
-    <dimen name="zx_card_frame">168dp</dimen>
-    <dimen name="zx_card_art">160dp</dimen>
-    <dimen name="zx_card_name_height">30dp</dimen>
+    <dimen name="zx_card_frame">184dp</dimen>
+    <dimen name="zx_card_art">174dp</dimen>
+    <dimen name="zx_card_name_height">38dp</dimen>
 
     <!-- Details -->
     <dimen name="zx_details_art_tile">240dp</dimen>
@@ -57,11 +57,11 @@
     <dimen name="zx_progress_height">6dp</dimen>
 
     <!-- Type scale -->
-    <dimen name="zx_text_brand">24sp</dimen>
+    <dimen name="zx_text_brand">30sp</dimen>
     <dimen name="zx_text_details_title">30sp</dimen>
-    <dimen name="zx_text_title">18sp</dimen>
+    <dimen name="zx_text_title">22sp</dimen>
     <dimen name="zx_text_body">15sp</dimen>
-    <dimen name="zx_text_control">14sp</dimen>
-    <dimen name="zx_text_caption">12sp</dimen>
+    <dimen name="zx_text_control">15sp</dimen>
+    <dimen name="zx_text_caption">14sp</dimen>
     <dimen name="zx_text_overline">11sp</dimen>
 </resources>
