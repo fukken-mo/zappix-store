@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Card title: soft white at rest, full white when its card is focused. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#FFFFFFFF" android:state_focused="true" />
+    <item android:color="#D2DEEE" />
+</selector>

@@ -1,98 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  App card: a raised glass tile (artwork + name + price/category). Everything, including the
-  focus ring and the baked depth shadow, is drawn inside the card's own bounds; focus scales the
-  card by at most 1.03, so nothing is ever drawn outside the row's padding or onto a neighbour.
-  Height: 6 pad + 172 art + 8 + name + subtitle + 6 pad + 4 depth = 240dp.
+  App card = raised icon tile + title below it.
+  Only the icon tile (cardFrame) carries the glass surface, glow, focus ring and depth, and only the
+  tile pops forward on focus (x1.03, 2dp lift, see AppAdapter). The title and price line sit
+  underneath on the page background and only brighten on focus.
+  Height: 188 tile (184 face + 4 baked depth) + 10 + title + 3 + subtitle = 240dp.
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/zx_card_width"
     android:layout_height="@dimen/zx_card_height"
     android:layout_marginEnd="@dimen/zx_card_gap"
-    android:background="@drawable/bg_card_surface"
     android:clickable="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:focusable="true"
-    android:outlineProvider="none">
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/zx_card_pad"
-        android:paddingTop="@dimen/zx_card_pad"
-        android:paddingEnd="@dimen/zx_card_pad"
-        android:paddingBottom="10dp">
+    <!-- Icon tile: surface, artwork, badge and focus ring. Mirrors the card's focus state. -->
+    <FrameLayout
+        android:id="@+id/cardFrame"
+        android:layout_width="@dimen/zx_tile_size"
+        android:layout_height="@dimen/zx_tile_height"
+        android:background="@drawable/bg_card_surface"
+        android:duplicateParentState="true"
+        android:outlineProvider="none">
 
-        <FrameLayout
-            android:id="@+id/cardFrame"
-            android:layout_width="@dimen/zx_card_frame"
-            android:layout_height="@dimen/zx_card_frame">
+        <ImageView
+            android:id="@+id/appArtwork"
+            android:layout_width="@dimen/zx_card_art"
+            android:layout_height="@dimen/zx_card_art"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="@dimen/zx_card_pad"
+            android:background="@drawable/bg_app_placeholder"
+            android:importantForAccessibility="no"
+            android:outlineProvider="background"
+            android:scaleType="centerCrop" />
 
-            <ImageView
-                android:id="@+id/appArtwork"
-                android:layout_width="@dimen/zx_card_art"
-                android:layout_height="@dimen/zx_card_art"
-                android:background="@drawable/bg_app_placeholder"
-                android:importantForAccessibility="no"
-                android:outlineProvider="background"
-                android:scaleType="centerCrop" />
-
-            <!-- Soft lower vignette so the badge and artwork edge read on bright icons. -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_card_art_sheen" />
-
-            <TextView
-                android:id="@+id/installedBadge"
-                style="@style/ZappixBadge"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_installed_badge"
-                android:text="@string/zx_badge_installed"
-                android:textColor="@color/zx_badge_installed_text"
-                android:visibility="gone" />
-        </FrameLayout>
+        <!-- Soft top light + lower vignette so the badge and artwork edge read on bright icons. -->
+        <View
+            android:layout_width="@dimen/zx_card_art"
+            android:layout_height="@dimen/zx_card_art"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="@dimen/zx_card_pad"
+            android:background="@drawable/bg_card_art_sheen" />
 
         <TextView
-            android:id="@+id/appName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:alpha="0.85"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:textColor="@color/zx_text_primary"
-            android:textSize="@dimen/zx_text_card_name"
-            android:textStyle="bold" />
+            android:id="@+id/installedBadge"
+            style="@style/ZappixBadge"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/bg_installed_badge"
+            android:text="@string/zx_badge_installed"
+            android:textColor="@color/zx_badge_installed_text"
+            android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/appSubtitle"
+        <!-- Focus ring + inner cyan/purple glow: exactly the icon tile face, faded in by AppAdapter. -->
+        <View
+            android:id="@+id/focusFrame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:textColor="@color/zx_text_secondary"
-            android:textSize="@dimen/zx_text_card_sub" />
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:alpha="0"
+            android:background="@drawable/bg_card_focus"
+            android:visibility="invisible" />
+    </FrameLayout>
 
-    <!-- Focus ring + inner cyan glow, faded in by AppAdapter. -->
-    <View
-        android:id="@+id/focusFrame"
+    <TextView
+        android:id="@+id/appName"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0"
-        android:background="@drawable/bg_card_focus"
-        android:visibility="invisible" />
-</FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:shadowColor="#99000814"
+        android:shadowDy="1"
+        android:shadowRadius="3"
+        android:textColor="@color/zx_card_title"
+        android:textSize="@dimen/zx_text_card_name"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/appSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:textColor="@color/zx_card_subtitle"
+        android:textSize="@dimen/zx_text_card_sub" />
+</LinearLayout>

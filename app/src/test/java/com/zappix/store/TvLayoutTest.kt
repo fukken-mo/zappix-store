@@ -123,16 +123,18 @@ class TvLayoutTest {
             .map { boundsIn(root, root.findViewById(it)) }
         assertNoOverlap("nav pills", pills)
 
-        // A focused card (scaled and lifted) must stay inside the row and above the bottom safe edge.
+        // A focused icon tile (scaled and lifted) must stay inside the row; the whole card must end
+        // above the bottom safe edge.
         val row = boundsIn(root, root.findViewById(R.id.rowContainer))
         val recycler = root.findViewById<View>(R.id.appsRecycler)
         val cardHeight = context.resources.getDimension(R.dimen.zx_card_height)
+        val tileHeight = context.resources.getDimension(R.dimen.zx_tile_height)
         val cardTop = row.top + recycler.paddingTop
-        val grow = cardHeight * (AppAdapter.FOCUS_SCALE - 1f) / 2f
+        val tileGrow = tileHeight * (AppAdapter.FOCUS_SCALE - 1f) / 2f
         val lift = dp(AppAdapter.FOCUS_LIFT_DP)
-        assertTrue("focused card top clipped", cardTop - grow - lift >= row.top - tolerance)
-        assertTrue("focused card bottom outside row", cardTop + cardHeight + grow <= row.bottom + tolerance)
-        assertTrue("focused card below safe area", cardTop + cardHeight + grow <= safe.bottom + tolerance)
+        assertTrue("focused tile top clipped", cardTop - tileGrow - lift >= row.top - tolerance)
+        assertTrue("card bottom outside row", cardTop + cardHeight <= row.bottom + tolerance)
+        assertTrue("card below safe area", cardTop + cardHeight <= safe.bottom + tolerance)
 
         // First card starts on the same safe edge as the tabs.
         assertEquals(pills.first().left, row.left + recycler.paddingStart, 1f)
@@ -153,24 +155,34 @@ class TvLayoutTest {
         card.layout(0, 0, width, height)
         val cardBounds = RectF(0f, 0f, width.toFloat(), height.toFloat())
 
-        // Focus ring, artwork, badge, name and subtitle are all drawn inside the card itself.
-        listOf(R.id.focusFrame, R.id.appArtwork, R.id.installedBadge, R.id.appName, R.id.appSubtitle).forEach { id ->
-            assertInside("card child $id", cardBounds, boundsIn(card, card.findViewById(id)))
-        }
-        // Text must sit on the tile face, above the baked depth shadow.
-        val face = RectF(0f, 0f, width.toFloat(), height - res.getDimension(R.dimen.zx_card_depth))
-        assertInside("card subtitle on face", face, boundsIn(card, card.findViewById(R.id.appSubtitle)))
+        // Everything is laid out inside the card.
+        listOf(R.id.cardFrame, R.id.focusFrame, R.id.appArtwork, R.id.installedBadge, R.id.appName, R.id.appSubtitle)
+            .forEach { id -> assertInside("card child $id", cardBounds, boundsIn(card, card.findViewById(id))) }
+
+        // The focus ring wraps exactly the icon tile, never the title underneath.
+        val tile = boundsIn(card, card.findViewById(R.id.cardFrame))
+        val ring = boundsIn(card, card.findViewById(R.id.focusFrame))
+        assertEquals("ring must match the icon tile", tile, ring)
+        val title = boundsIn(card, card.findViewById(R.id.appName))
+        val subtitle = boundsIn(card, card.findViewById(R.id.appSubtitle))
+        assertTrue("title overlaps the icon tile", title.top >= tile.bottom - tolerance)
+        assertTrue("subtitle overlaps the title", subtitle.top >= title.bottom - tolerance)
+        assertEquals("title not centred under the tile", tile.centerX(), title.centerX(), 1f)
+        // Artwork and badge sit on the tile face, above its baked depth shadow.
+        val face = RectF(tile.left, tile.top, tile.right, tile.bottom - res.getDimension(R.dimen.zx_card_depth))
+        assertInside("artwork on tile face", face, boundsIn(card, card.findViewById(R.id.appArtwork)))
         // Installed/Update badge must draw above the artwork (a higher Z would hide it).
         val badge = card.findViewById<View>(R.id.installedBadge)
         val artwork = card.findViewById<View>(R.id.appArtwork)
         assertTrue("badge is hidden under the artwork", badge.z >= artwork.z)
 
-        val growV = height * (AppAdapter.FOCUS_SCALE - 1f) / 2f
-        val growH = width * (AppAdapter.FOCUS_SCALE - 1f) / 2f
-        assertTrue("scale+lift exceed row top padding",
-            growV + dp(AppAdapter.FOCUS_LIFT_DP) <= res.getDimension(R.dimen.zx_row_pad_top))
-        assertTrue("scale exceeds row bottom padding", growV <= res.getDimension(R.dimen.zx_row_pad_bottom))
-        assertTrue("focused card would touch its neighbour", growH < res.getDimension(R.dimen.zx_card_gap))
+        // Only the tile scales/lifts: it must clear the row padding, its neighbours and the title.
+        val growV = tile.height() * (AppAdapter.FOCUS_SCALE - 1f) / 2f
+        val growH = tile.width() * (AppAdapter.FOCUS_SCALE - 1f) / 2f
+        val lift = dp(AppAdapter.FOCUS_LIFT_DP)
+        assertTrue("tile scale+lift exceed row top padding", growV + lift <= res.getDimension(R.dimen.zx_row_pad_top))
+        assertTrue("focused tile would touch its neighbour", growH < res.getDimension(R.dimen.zx_card_gap) / 2f)
+        assertTrue("focused tile would cover the title", tile.bottom + growV - lift <= title.top + tolerance)
     }
 
     @Test

@@ -48,6 +48,8 @@ class AppAdapter(
         private val name: TextView = itemView.findViewById(R.id.appName)
         private val subtitle: TextView = itemView.findViewById(R.id.appSubtitle)
         private val glow: View = itemView.findViewById(R.id.focusFrame)
+        /** The icon tile: the only part of the card that is highlighted and pops forward on focus. */
+        private val tile: View = itemView.findViewById(R.id.cardFrame)
         private val badge: TextView = itemView.findViewById(R.id.installedBadge)
         private val density = itemView.resources.displayMetrics.density
         private var item: AppItem? = null
@@ -108,13 +110,13 @@ class AppAdapter(
         private fun applyFocusState(focused: Boolean, animate: Boolean) {
             val scale = if (focused) FOCUS_SCALE else 1f
             val lift = if (focused) -FOCUS_LIFT_DP * density else 0f
-            // translationZ only changes drawing order here (the card has no outline, so no shadow).
+            // translationZ only changes drawing order here (no outline, so no shadow).
             itemView.translationZ = if (focused) 8f * density else 0f
-            itemView.animate().cancel()
+            tile.animate().cancel()
             glow.animate().cancel()
-            name.alpha = if (focused) 1f else 0.85f
+            // The title stays outside the highlight; it only brightens via its colour selector.
             if (animate) {
-                itemView.animate()
+                tile.animate()
                     .scaleX(scale)
                     .scaleY(scale)
                     .translationY(lift)
@@ -130,9 +132,9 @@ class AppAdapter(
                         .start()
                 }
             } else {
-                itemView.scaleX = scale
-                itemView.scaleY = scale
-                itemView.translationY = lift
+                tile.scaleX = scale
+                tile.scaleY = scale
+                tile.translationY = lift
                 glow.alpha = if (focused) 1f else 0f
                 glow.visibility = if (focused) View.VISIBLE else View.INVISIBLE
             }
@@ -147,9 +149,9 @@ class AppAdapter(
     }
 
     companion object {
-        /** Card focus scale. Kept at or below 1.03 so a focused card never reaches the row edges. */
+        /** Icon-tile focus scale. Kept at or below 1.03 so a focused tile never reaches the row edges. */
         const val FOCUS_SCALE = 1.03f
-        /** Upward lift of a focused card, in dp. */
+        /** Upward lift of a focused icon tile, in dp. */
         const val FOCUS_LIFT_DP = 2f
         private const val PAYLOAD_STATE = "state"
         private val FOCUS_INTERPOLATOR = DecelerateInterpolator(1.6f)

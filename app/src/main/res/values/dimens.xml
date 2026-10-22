@@ -43,9 +43,11 @@
     <dimen name="zx_card_height">240dp</dimen>
     <dimen name="zx_card_gap">14dp</dimen>
     <dimen name="zx_card_pad">6dp</dimen>
-    <dimen name="zx_card_frame">172dp</dimen>
     <dimen name="zx_card_art">172dp</dimen>
     <dimen name="zx_card_depth">4dp</dimen>
+    <!-- Icon tile: 184dp square face + 4dp baked depth underneath. -->
+    <dimen name="zx_tile_size">184dp</dimen>
+    <dimen name="zx_tile_height">188dp</dimen>
 
     <!-- Details -->
     <dimen name="zx_details_art_tile">240dp</dimen>

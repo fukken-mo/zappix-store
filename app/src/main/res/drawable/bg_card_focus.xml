@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Card focus: cyan ring + light inner line + soft inner cyan glow, all inside the tile face. -->
+<!--
+  Icon-tile focus: cyan ring + light inner line + soft inner cyan-to-purple glow, all inside the
+  tile face (bottom 4dp = baked depth), so nothing is drawn outside the tile or onto the title.
+-->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:bottom="@dimen/zx_card_depth">
         <shape>
@@ -16,7 +19,13 @@
     <item android:left="4.5dp" android:top="4.5dp" android:right="4.5dp" android:bottom="8.5dp">
         <shape>
             <corners android:radius="17.5dp" />
-            <stroke android:width="4dp" android:color="#3318C8FF" />
+            <stroke android:width="4dp" android:color="#3818C8FF" />
+        </shape>
+    </item>
+    <item android:left="4.5dp" android:top="4.5dp" android:right="4.5dp" android:bottom="8.5dp">
+        <shape>
+            <corners android:radius="17.5dp" />
+            <stroke android:width="7dp" android:color="#1A7A5CFF" />
         </shape>
     </item>
 </layer-list>
