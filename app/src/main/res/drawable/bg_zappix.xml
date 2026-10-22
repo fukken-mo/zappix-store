@@ -1,12 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape><gradient android:angle="270" android:startColor="@color/zx_bg_top" android:centerColor="@color/zx_bg_mid" android:endColor="@color/zx_bg_bottom" /></shape>
+        <shape>
+            <gradient
+                android:angle="270"
+                android:startColor="#071D46"
+                android:centerColor="#06142E"
+                android:endColor="#020713" />
+        </shape>
     </item>
-    <item android:gravity="top|left" android:width="520dp" android:height="360dp">
-        <shape android:shape="oval"><gradient android:type="radial" android:gradientRadius="260dp" android:startColor="#203B75FF" android:endColor="#003B75FF" /></shape>
+
+    <item android:gravity="top|left" android:width="760dp" android:height="420dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="360dp"
+                android:startColor="#4A0B6FFF"
+                android:centerColor="#25184FD8"
+                android:endColor="#00184FD8" />
+        </shape>
     </item>
-    <item android:gravity="bottom|right" android:width="560dp" android:height="380dp">
-        <shape android:shape="oval"><gradient android:type="radial" android:gradientRadius="280dp" android:startColor="#147A5CFF" android:endColor="#007A5CFF" /></shape>
+
+    <item android:gravity="center|right" android:width="700dp" android:height="360dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="330dp"
+                android:startColor="#4A593CFF"
+                android:centerColor="#253B4BFF"
+                android:endColor="#003B4BFF" />
+        </shape>
+    </item>
+
+    <item android:gravity="bottom|left" android:width="820dp" android:height="260dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="0"
+                android:startColor="#0018C8FF"
+                android:centerColor="#3318C8FF"
+                android:endColor="#007A5CFF" />
+        </shape>
+    </item>
+
+    <item android:gravity="bottom|right" android:width="620dp" android:height="300dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="300dp"
+                android:startColor="#3D7A5CFF"
+                android:centerColor="#287A3BFF"
+                android:endColor="#007A3BFF" />
+        </shape>
     </item>
 </layer-list>
