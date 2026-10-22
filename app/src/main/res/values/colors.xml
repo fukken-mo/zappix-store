@@ -5,13 +5,11 @@
     <color name="zx_bg_top">#071326</color>
     <color name="zx_bg_mid">#050914</color>
     <color name="zx_bg_bottom">#02040A</color>
-    <color name="zx_scrim">#F703060C</color>
 
     <!-- Surfaces -->
     <color name="zx_surface">#0D1624</color>
-    <color name="zx_surface_raised">#122033</color>
     <color name="zx_stroke">#22344A</color>
-    <color name="zx_stroke_strong">#2E4A66</color>
+    <color name="zx_stroke_strong">#34557D</color>
 
     <!-- Brand ramp -->
     <color name="zx_cyan">#18C8FF</color>
@@ -34,8 +32,8 @@
     <!-- Destructive -->
     <color name="zx_danger">#FF4D6A</color>
     <color name="zx_danger_deep">#C2243F</color>
-    <color name="zx_danger_surface">#2A0F18</color>
-    <color name="zx_danger_stroke">#7A2638</color>
+    <color name="zx_danger_surface">#2E0E19</color>
+    <color name="zx_danger_stroke">#9A3048</color>
     <color name="zx_danger_text">#FF9AAB</color>
 
     <!-- Status badges -->
