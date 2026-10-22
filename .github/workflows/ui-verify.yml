@@ -25,7 +25,19 @@ jobs:
           gradle-version: '8.9'
 
       - name: Unit + layout tests
+        env:
+          ZAPPIX_SCREENSHOTS: '1'
         run: gradle testDebugUnitTest --stacktrace
+
+      - name: Print UI previews
+        if: always()
+        run: |
+          for f in app/build/screenshots/*.jpg; do
+            [ -f "$f" ] || continue
+            echo "ZXSHOT-BEGIN $(basename "$f")"
+            base64 -w 3000 "$f"
+            echo "ZXSHOT-END"
+          done
 
       - name: Lint
         if: always()
