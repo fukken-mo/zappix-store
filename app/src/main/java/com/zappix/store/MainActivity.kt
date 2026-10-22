@@ -965,21 +965,14 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun updateFeaturedVisibility() {
-        val visible = currentSection == StoreSection.FREE && featuredApp != null
-        if (!visible && featuredCard.hasFocus()) freeTab.requestFocus()
-        featuredCard.visibility = if (visible) View.VISIBLE else View.GONE
-        if (visible) {
-            featuredCard.nextFocusUpId = R.id.freeTab
-            featuredCard.nextFocusDownId = R.id.appsRecycler
-        }
+        // Premium home layout keeps the catalog card-first so the app row can use the full TV height.
+        // Featured apps still appear normally in their category; only the separate promo strip is hidden.
+        if (featuredCard.hasFocus()) freeTab.requestFocus()
+        featuredCard.visibility = View.GONE
     }
 
     private fun focusAboveRow(): Boolean {
-        return if (currentSection == StoreSection.FREE && featuredCard.visibility == View.VISIBLE) {
-            featuredCard.requestFocus()
-        } else {
-            tabFor(currentSection).requestFocus()
-        }
+        return tabFor(currentSection).requestFocus()
     }
 
     private fun buildAppMeta(app: StoreApp): String {
