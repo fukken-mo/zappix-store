@@ -110,10 +110,14 @@ class TvLayoutTest {
             "tools" to R.id.toolsTab,
             "updates" to R.id.updatesTab,
             "sectionTitle" to R.id.sectionTitle,
-            "errorText" to R.id.errorText,
-            "row" to R.id.rowContainer
+            "errorText" to R.id.errorText
         )
         ids.forEach { (name, id) -> assertInside(name, safe, boundsIn(root, root.findViewById(id))) }
+
+        // The row intentionally runs edge to edge horizontally; vertically it must stay inside the safe area.
+        val rowBounds = boundsIn(root, root.findViewById(R.id.rowContainer))
+        assertTrue("row top above safe area", rowBounds.top >= safe.top - tolerance)
+        assertTrue("row bottom below safe area", rowBounds.bottom <= safe.bottom + tolerance)
 
         val pills = listOf(R.id.freeTab, R.id.subscriptionTab, R.id.adultTab, R.id.toolsTab, R.id.updatesTab)
             .map { boundsIn(root, root.findViewById(it)) }

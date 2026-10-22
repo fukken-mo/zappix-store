@@ -65,6 +65,12 @@ class TvScreenshotTest {
         File(dir, "$name.jpg").outputStream().use { half.compress(Bitmap.CompressFormat.JPEG, 82, it) }
     }
 
+    /** Robolectric stays in touch mode; let the preview target take real focus so focused states render. */
+    private fun View.focusForPreview() {
+        isFocusableInTouchMode = true
+        requestFocus()
+    }
+
     private fun settle() = ShadowLooper.idleMainLooper(600, TimeUnit.MILLISECONDS)
 
     @Test
@@ -105,15 +111,15 @@ class TvScreenshotTest {
         }
 
         settle(); layoutAll(); settle(); layoutAll(); paintArt()
-        recycler.getChildAt(1)?.requestFocusFromTouch()
+        recycler.getChildAt(1)?.focusForPreview()
         settle(); layoutAll(); paintArt()
         save("home_card_focused", root, width, height)
 
-        activity.findViewById<View>(R.id.subscriptionTab).requestFocusFromTouch()
+        activity.findViewById<View>(R.id.subscriptionTab).focusForPreview()
         settle(); layoutAll(); paintArt()
         save("home_tab_focused", root, width, height)
 
-        activity.findViewById<View>(R.id.refreshButton).requestFocusFromTouch()
+        activity.findViewById<View>(R.id.refreshButton).focusForPreview()
         settle(); layoutAll(); paintArt()
         save("home_refresh_focused", root, width, height)
 
@@ -131,11 +137,11 @@ class TvScreenshotTest {
             activity.findViewById<ImageView>(id).setImageDrawable(fakeArt(i + 2))
         }
         activity.findViewById<View>(R.id.uninstallFullButton).visibility = View.VISIBLE
-        activity.findViewById<Button>(R.id.installFullButton).apply { text = "Update"; requestFocusFromTouch() }
+        activity.findViewById<Button>(R.id.installFullButton).apply { text = "Update"; focusForPreview() }
         settle(); layoutAll()
         save("details_primary_focused", root, width, height)
 
-        activity.findViewById<View>(R.id.uninstallFullButton).requestFocusFromTouch()
+        activity.findViewById<View>(R.id.uninstallFullButton).focusForPreview()
         settle(); layoutAll()
         save("details_uninstall_focused", root, width, height)
 
@@ -143,7 +149,7 @@ class TvScreenshotTest {
         activity.findViewById<View>(R.id.uninstallFullButton).visibility = View.GONE
         activity.findViewById<android.widget.ProgressBar>(R.id.detailProgress).apply { isIndeterminate = false; progress = 42 }
         activity.findViewById<TextView>(R.id.detailProgressLabel).text = "Downloading · 42% · 16.2 MB of 38.6 MB"
-        activity.findViewById<Button>(R.id.installFullButton).apply { text = "Downloading 42%"; isActivated = true; requestFocusFromTouch() }
+        activity.findViewById<Button>(R.id.installFullButton).apply { text = "Downloading 42%"; isActivated = true; focusForPreview() }
         settle(); layoutAll()
         save("details_downloading", root, width, height)
     }
