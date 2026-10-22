@@ -27,14 +27,19 @@
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="@dimen/zx_header_height"
+            android:background="@drawable/bg_header_panel"
+            android:elevation="6dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
 
             <FrameLayout
                 android:layout_width="@dimen/zx_logo_tile"
                 android:layout_height="@dimen/zx_logo_tile"
                 android:background="@drawable/bg_logo_tile"
-                android:padding="6dp">
+                android:elevation="10dp"
+                android:padding="8dp">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -58,7 +63,11 @@
                     android:text="@string/zx_brand"
                     android:textColor="@color/zx_text_primary"
                     android:textSize="@dimen/zx_text_brand"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:shadowColor="#99000000"
+                    android:shadowDx="0"
+                    android:shadowDy="2"
+                    android:shadowRadius="4" />
 
                 <TextView
                     style="@style/ZappixText.Caption"
@@ -79,6 +88,7 @@
                 android:layout_height="@dimen/zx_nav_pill_height"
                 android:background="@drawable/bg_refresh"
                 android:clickable="true"
+                android:elevation="6dp"
                 android:drawableStart="@drawable/ic_refresh"
                 android:drawablePadding="@dimen/zx_icon_gap"
                 android:drawableTint="@color/zx_btn_secondary_content"
@@ -218,8 +228,8 @@
         <!-- Section title + inline status (error never pushes the row down) -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_marginTop="12dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="14dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -248,7 +258,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/zx_row_height"
             android:layout_marginStart="-56dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="-56dp"
             android:clipChildren="false"
             android:clipToPadding="false">
